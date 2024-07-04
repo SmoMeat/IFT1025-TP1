@@ -1,3 +1,3 @@
 public enum ClassType {
-    TH, TP, LAB
+    TH, TP, LAB, INTRA, FINAL
 }

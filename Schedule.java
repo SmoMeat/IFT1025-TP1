@@ -1,160 +1,174 @@
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Schedule {
-    private LocalTime start;
-    private LocalTime end;
-    private int dayOfWeek; // 0 = Dimanche et 6 = Samedi. Sinon, on prend le modulo
-    private ClassType type; // Le type du cours (Th, Tp ou Lab)
+    private class SchedulePeriod extends Period {
+        public Course course;
 
-    public Schedule(LocalTime start, LocalTime end, int dayOfWeek, ClassType type) {
-        this.start = start;
-        this.end = end;
-        this.dayOfWeek = dayOfWeek % 7;
-        this.type = type;
-    }
-
-    // Getters et Setters des differents attributs
-    public void setStart(LocalTime start) {
-        this.start = start;
-    }
-
-    public void setEnd(LocalTime end) {
-        this.end = end;
-    }
-
-    public void setDayOfWeek(int dayOfWeek) {
-        this.dayOfWeek = dayOfWeek % 7;
-    }
-
-    public void setType(ClassType type) {
-        this.type = type;
-    }
-
-    public LocalTime getStart() {
-        return this.start;
-    }
-
-    public LocalTime getEnd() {
-        return this.end;
-    }
-
-    public int getDayOfWeek() {
-        return this.dayOfWeek;
-    }
-
-    public ClassType getType() {
-        return this.type;
-    }
-
-    @Override
-    public String toString() {
-        String result = "";
-        DayOfWeek day = DayOfWeek.SUNDAY;
-        String jours = "Dimanche";
-        result += this.type + " - ";
-
-        switch (this.dayOfWeek) {
-            case 1:
-                day = DayOfWeek.MONDAY;
-                jours = "Lundi";
-                break;
-            case 2:
-                day = DayOfWeek.TUESDAY;
-                jours = "Mardi";
-                break;
-            case 3:
-                day = DayOfWeek.WEDNESDAY;
-                jours = "Mercredi";
-                break;
-            case 4:
-                day = DayOfWeek.THURSDAY;
-                jours = "Jeudi";
-                break;
-            case 5:
-                day = DayOfWeek.FRIDAY;
-                jours = "Vendredi";
-                break;
-            case 6:
-                day = DayOfWeek.SATURDAY;
-                jours = "Samedi";
-                break;
+        SchedulePeriod(Course course, Period period) {
+            super(period);
+            this.course = course;
         }
-        result += jours + " De " + this.start.toString() + " à " + this.end.toString();
-        return result;
     }
 
-    /**
-     * Cette fonction calcul le temps entre 2 sceance de cours en nombre d'heures relativement
-     * a l'instance actuel. Par exemple, si le cours actuel finit à 13h et celui en parametre
-     * finit 14h ça retourne 1.0. Si lec cours actuel finit à 13h et le second fint à 12h ça
-     * retourne -1.
-     *
-     * @param autre Schedule - C'est la sceance avec laquelle on compare
-     * @return double - On renvoit le nombre d'heure entre les sceances
-     */
-    public double timeBetween(Schedule autre) {
-        // On calcule d'abord l'ecart d'heure selon le jour
-        double result = (autre.dayOfWeek - this.dayOfWeek) * 24;
+    private Map<DayOfWeek, List<SchedulePeriod>> schedule;
+    private int totalCredits;
 
-        //On prend en compte les heures et minute
-        double hourThis = this.end.getHour();
-        double minuteThis = this.end.getMinute() / 60;
-
-        double hourTotEnd = hourThis + minuteThis;
-
-        double hourAutre = autre.end.getHour();
-        double minuteAutre = autre.end.getMinute() / 60;
-
-        double hourTotStart = hourAutre + minuteAutre;
-
-        result += (hourTotStart - hourTotEnd);
-
-        return result;
+    public Schedule() {
+        schedule = new HashMap<>();
+        for (DayOfWeek day : DayOfWeek.values()) {
+            schedule.put(day, new ArrayList<>());
+        }
     }
 
-
-    /**
-     * Cette fonction
-     *
-     * @return
-     */
-    public double timeOf() {
-        double HEnd = this.end.getHour();
-        double MEnd = this.end.getMinute() / 60;
-        double HStart = this.start.getHour();
-        double MStart = this.start.getMinute() / 60;
-
-        return (HEnd + MEnd) - (HStart + MStart);
+    public Schedule(Schedule other) {
+        this();
+        for (DayOfWeek day : DayOfWeek.values()) {
+            for (SchedulePeriod period : other.schedule.get(day)) {
+                schedule.get(day).add(period);
+            }
+        }
+        this.totalCredits = other.totalCredits;
     }
 
-    /**
-     * Cette fonction verifie si 2 sceances sont en conflit d'horaire
-     *
-     * @param autre Schedule - L'autre sceance avec laquelle on compare
-     *
-     * @return boolean - On retourne un booleen indiquant s'il y a un conflit
-     */
-    public boolean inConflict(Schedule autre) {
-        if (this.timeBetween(autre) == 0)
-            return true;
-        if (Math.abs(this.timeBetween(autre)) < Math.max(this.timeOf(), autre.timeOf())) {
-            if (this.timeBetween(autre) < 0) {
-                if ((this.start.getHour() + this.start.getMinute() / 60) < (autre.end.getHour() +
-                        autre.end.getMinute() / 60)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                if ((autre.start.getHour() + autre.start.getMinute() / 60) < (this.end.getHour() +
-                        this.end.getMinute() / 60)) {
-                    return true;
-                } else {
-                    return false;
+    public Schedule(List<Course> courses, String sessionName) {
+        this();
+        addManyClasses(courses, sessionName);
+    }
+
+    public void addClass(Course course, String sessionName) {
+        if (course.getSemesterByName(sessionName) == null) {
+            return;
+        }
+        course.getSemesterByName(sessionName).getPeriods().forEach(period -> {
+            schedule.get(period.getDayOfWeek()).add(new SchedulePeriod(course, period));
+        });
+        totalCredits += course.getCredits();
+    }
+
+    public void addManyClasses(List<Course> courses, String sessionName) {
+        for (Course course : courses) {
+            addClass(course, sessionName);
+        }
+    }
+
+    public void removeClass(Course course, String sessionName) {
+        course.getSemesterByName(sessionName).getPeriods().forEach(period -> {
+            schedule.get(period.getDayOfWeek()).remove(period);
+        });
+        totalCredits -= course.getCredits();
+    }
+
+    public List<SchedulePeriod> getClassesForSpecifDay(DayOfWeek day) {
+        return schedule.get(day);
+    }
+
+    public boolean hasConflict() {
+        for (DayOfWeek day : DayOfWeek.values()) {
+            List<SchedulePeriod> periods = schedule.get(day);
+            for (int i = 0; i < periods.size(); i++) {
+                for (int j = i + 1; j < periods.size(); j++) {
+                    if (periods.get(i).inConflict(periods.get(j))) {
+                        return true;
+                    }
                 }
             }
         }
         return false;
+    }
+
+    public static List<Schedule> generateAllPossibleSchedules(ArrayList<Course> availableCourses, String sessionName) {
+        int length = availableCourses.size();
+        List<Schedule> result = new ArrayList<>();
+        for (int n = 1; n <= length; n++) {
+            generateScheduleHelper(availableCourses, n, 0, new ArrayList<>(Collections.nCopies(n, null)), result, sessionName);
+        }
+        return result;
+    }
+
+    // n = nbr de cours à ajouter
+    // start: index actuel de la liste
+    // selections: les cours actuellement séléctionnés
+    // result: liste de toutes les horaires
+    private static void generateScheduleHelper(List<Course> list, int n, int start, List<Course> selections, List<Schedule> result, String sessionName) {
+        if (n == 0) {
+            result.add(new Schedule(selections, sessionName));
+        } else {
+            for (int i = start; i <= list.size() - n; i++) {
+                selections.set(selections.size() - n, list.get(i));
+                generateScheduleHelper(list, n - 1, i + 1, selections, result, sessionName);
+            }
+        }
+    }
+
+    public static List<Schedule> genarateSuitableSchedules(ArrayList<Course> availableCourses, int minCredits, int maxCredits, String sessionName) {
+        ArrayList<Schedule> results = new ArrayList<>();
+        for (Schedule schedule : generateAllPossibleSchedules(availableCourses, sessionName)) {
+            if (schedule.getTotalCredits() < minCredits || schedule.getTotalCredits() > maxCredits)
+                continue;
+            if (schedule.hasConflict())
+                continue;
+
+
+            results.add(schedule);
+        }
+        return results;
+    }
+
+    @Override
+    public String toString() {
+        String str = "";
+        for (DayOfWeek day : DayOfWeek.values()) {
+            str += day + ":\n";
+            for (Period classDetails : schedule.get(day)) {
+                str += "\t" + classDetails + "\n";
+            }
+        }
+        return str;
+    }
+
+    public void printScheduleGrid() {
+        LocalTime startHour = LocalTime.of(8, 0);
+        LocalTime endHour = LocalTime.of(19, 0);
+        int rows = (endHour.getHour() - startHour.getHour()) * 2;
+        String[][] grid = new String[rows + 1][7];
+
+        for (int i = 0; i < rows; i++) {
+            Arrays.fill(grid[i], " ");
+        }
+
+        for (DayOfWeek day : DayOfWeek.values()) {
+            for (SchedulePeriod period : schedule.get(day)) {
+                int dayIndex = day.getValue() - 1;
+                int startSlot = (period.getStart().getHour() - startHour.getHour()) * 2 + (period.getStart().getMinute() / 30);
+                int endSlot = (period.getEnd().getHour() - startHour.getHour()) * 2 + (period.getEnd().getMinute() / 30);
+                for (int i = startSlot; i < endSlot; i++) {
+                    grid[i][dayIndex] = period.course.getName();
+                }
+            }
+        }
+
+        System.out.println("╔═══════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╗");
+        System.out.println("║ " + String.format("%02d", getTotalCredits()) + " cr ║   Mon   ║   Tue   ║   Wed   ║   Thu   ║   Fri   ║   Sat   ║   Sun   ║");
+        System.out.println("╠═══════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╣");
+        for (int i = 0; i < rows; i++) {
+            String time = String.format("║ %02d:%02d", startHour.getHour() + (i / 2), (i % 2) * 30);
+            System.out.print(time + " ║ ");
+            for (int j = 0; j < 7; j++) {
+                System.out.print(grid[i][j].length() > 1 ? grid[i][j] + " ║ " : "        ║ ");
+            }
+            System.out.println();
+        }
+        System.out.println("╚═══════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╝");
+    }
+
+    public int getTotalCredits() {
+        return this.totalCredits;
     }
 }

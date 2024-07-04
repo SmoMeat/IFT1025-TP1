@@ -1,0 +1,160 @@
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+
+public class Schedule {
+    private LocalTime start;
+    private LocalTime end;
+    private int dayOfWeek; // 0 = Dimanche et 6 = Samedi. Sinon, on prend le modulo
+    private ClassType type; // Le type du cours (Th, Tp ou Lab)
+
+    public Schedule(LocalTime start, LocalTime end, int dayOfWeek, ClassType type) {
+        this.start = start;
+        this.end = end;
+        this.dayOfWeek = dayOfWeek % 7;
+        this.type = type;
+    }
+
+    // Getters et Setters des differents attributs
+    public void setStart(LocalTime start) {
+        this.start = start;
+    }
+
+    public void setEnd(LocalTime end) {
+        this.end = end;
+    }
+
+    public void setDayOfWeek(int dayOfWeek) {
+        this.dayOfWeek = dayOfWeek % 7;
+    }
+
+    public void setType(ClassType type) {
+        this.type = type;
+    }
+
+    public LocalTime getStart() {
+        return this.start;
+    }
+
+    public LocalTime getEnd() {
+        return this.end;
+    }
+
+    public int getDayOfWeek() {
+        return this.dayOfWeek;
+    }
+
+    public ClassType getType() {
+        return this.type;
+    }
+
+    @Override
+    public String toString() {
+        String result = "";
+        DayOfWeek day = DayOfWeek.SUNDAY;
+        String jours = "Dimanche";
+        result += this.type + " - ";
+
+        switch (this.dayOfWeek) {
+            case 1:
+                day = DayOfWeek.MONDAY;
+                jours = "Lundi";
+                break;
+            case 2:
+                day = DayOfWeek.TUESDAY;
+                jours = "Mardi";
+                break;
+            case 3:
+                day = DayOfWeek.WEDNESDAY;
+                jours = "Mercredi";
+                break;
+            case 4:
+                day = DayOfWeek.THURSDAY;
+                jours = "Jeudi";
+                break;
+            case 5:
+                day = DayOfWeek.FRIDAY;
+                jours = "Vendredi";
+                break;
+            case 6:
+                day = DayOfWeek.SATURDAY;
+                jours = "Samedi";
+                break;
+        }
+        result += jours + " De " + this.start.toString() + " à " + this.end.toString();
+        return result;
+    }
+
+    /**
+     * Cette fonction calcul le temps entre 2 sceance de cours en nombre d'heures relativement
+     * a l'instance actuel. Par exemple, si le cours actuel finit à 13h et celui en parametre
+     * finit 14h ça retourne 1.0. Si lec cours actuel finit à 13h et le second fint à 12h ça
+     * retourne -1.
+     *
+     * @param autre Schedule - C'est la sceance avec laquelle on compare
+     * @return double - On renvoit le nombre d'heure entre les sceances
+     */
+    public double timeBetween(Schedule autre) {
+        // On calcule d'abord l'ecart d'heure selon le jour
+        double result = (autre.dayOfWeek - this.dayOfWeek) * 24;
+
+        //On prend en compte les heures et minute
+        double hourThis = this.end.getHour();
+        double minuteThis = this.end.getMinute() / 60;
+
+        double hourTotEnd = hourThis + minuteThis;
+
+        double hourAutre = autre.end.getHour();
+        double minuteAutre = autre.end.getMinute() / 60;
+
+        double hourTotStart = hourAutre + minuteAutre;
+
+        result += (hourTotStart - hourTotEnd);
+
+        return result;
+    }
+
+
+    /**
+     * Cette fonction
+     *
+     * @return
+     */
+    public double timeOf() {
+        double HEnd = this.end.getHour();
+        double MEnd = this.end.getMinute() / 60;
+        double HStart = this.start.getHour();
+        double MStart = this.start.getMinute() / 60;
+
+        return (HEnd + MEnd) - (HStart + MStart);
+    }
+
+    /**
+     * Cette fonction verifie si 2 sceances sont en conflit d'horaire
+     *
+     * @param autre Schedule - L'autre sceance avec laquelle on compare
+     *
+     * @return boolean - On retourne un booleen indiquant s'il y a un conflit
+     */
+    public boolean inConflict(Schedule autre) {
+        if (this.timeBetween(autre) == 0)
+            return true;
+        if (Math.abs(this.timeBetween(autre)) < Math.max(this.timeOf(), autre.timeOf())) {
+            if (this.timeBetween(autre) < 0) {
+                if ((this.start.getHour() + this.start.getMinute() / 60) < (autre.end.getHour() +
+                        autre.end.getMinute() / 60)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                if ((autre.start.getHour() + autre.start.getMinute() / 60) < (this.end.getHour() +
+                        this.end.getMinute() / 60)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+}

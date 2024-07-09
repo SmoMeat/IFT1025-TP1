@@ -7,6 +7,10 @@ import java.util.Arrays;
 public class CourseList {
     LocalDate start = LocalDate.of(2024,9,3);
     LocalDate end = LocalDate.of(2024,12,6);
+
+    private ArrayList<Course> courses;
+
+    
     
     public Course IFT1015A = new Course("IFT", 1015, 3, "A");
     public Course IFT1015B = new Course("IFT", 1015, 3, "B");

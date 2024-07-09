@@ -24,11 +24,17 @@ public class Student {
 
 
     public void addCourse(Course course, String sessionName) {
-        schedule.addClass(course, sessionName);
+        schedule.addCourse(course, sessionName);
     }
 
     public void generateBestSchedule(ArrayList<Course> availableCourses, String semesterName) {
         availableCourses.removeAll(takenCourses);
+        // retirer les cours sans préalables
+        for (Course course : availableCourses) {
+            if (takenCourses.containsAll(course.getPrerequisites()))
+                continue;
+            availableCourses.remove(course);
+        }
         List<Schedule> schedules =  Schedule.genarateSuitableSchedules(availableCourses, 14, 16, semesterName);
     }
 

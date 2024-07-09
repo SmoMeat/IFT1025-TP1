@@ -42,7 +42,8 @@ public class Schedule {
         addManyClasses(courses, sessionName);
     }
 
-    public void addClass(Course course, String sessionName) {
+    public void addCourse(Course course, String sessionName) {
+        // TODO: vérifier conflit d'horaire
         if (course.getSemesterByName(sessionName) == null) {
             return;
         }
@@ -54,7 +55,7 @@ public class Schedule {
 
     public void addManyClasses(List<Course> courses, String sessionName) {
         for (Course course : courses) {
-            addClass(course, sessionName);
+            addCourse(course, sessionName);
         }
     }
 
@@ -86,7 +87,7 @@ public class Schedule {
     public static List<Schedule> generateAllPossibleSchedules(ArrayList<Course> availableCourses, String sessionName) {
         int length = availableCourses.size();
         List<Schedule> result = new ArrayList<>();
-        for (int n = 1; n <= length; n++) {
+        for (int n = 1; n <= length; n++) { // mettre la limite à 10
             generateScheduleHelper(availableCourses, n, 0, new ArrayList<>(Collections.nCopies(n, null)), result, sessionName);
         }
         return result;
@@ -119,6 +120,29 @@ public class Schedule {
             results.add(schedule);
         }
         return results;
+    }
+
+
+    public static Schedule genarateBestSchedule(ArrayList<Course> availableCourses, String sessionName) {
+        ArrayList<Schedule> results = new ArrayList<>();
+        Schedule bestSchedule = new Schedule();
+        int bestScore = 0;
+        for (Schedule schedule : generateAllPossibleSchedules(availableCourses, sessionName)) {
+            if (schedule.getTotalCredits() < 15 || schedule.getTotalCredits() > 15)
+                continue;
+
+            int currentScore = schedule.getExamScore();
+
+            if (currentScore > bestScore) {
+                bestSchedule = schedule;
+                bestScore = currentScore;
+            }            
+        }
+        return bestSchedule;
+    }
+
+    public int getExamScore() {
+        return 0;
     }
 
     @Override

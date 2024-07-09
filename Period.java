@@ -112,9 +112,7 @@ public class Period {
 
         return result;
     }
-
     
-
 
     /**
      * Cette fonction
@@ -140,24 +138,25 @@ public class Period {
     public boolean inConflict(Period autre) {
         if (this.timeBetween(autre) == 0)
             return true;
-        if (Math.abs(this.timeBetween(autre)) < Math.max(this.timeOf(), autre.timeOf())) {
-            if (this.timeBetween(autre) < 0) {
-                if ((this.start.getHour() + this.start.getMinute() / 60) < (autre.end.getHour() +
-                        autre.end.getMinute() / 60)) {
-                    return true;
-                } else {
-                    return false;
-                }
+        if (Math.abs(this.timeBetween(autre)) >= Math.max(this.timeOf(), autre.timeOf())) {
+            return false;
+        }
+
+        if (this.timeBetween(autre) < 0) {
+            if ((this.start.getHour() + this.start.getMinute() / 60) < (autre.end.getHour() +
+                    autre.end.getMinute() / 60)) {
+                return true;
             } else {
-                if ((autre.start.getHour() + autre.start.getMinute() / 60) < (this.end.getHour() +
-                        this.end.getMinute() / 60)) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return false;
+            }
+        } else {
+            if ((autre.start.getHour() + autre.start.getMinute() / 60) < (this.end.getHour() +
+                    this.end.getMinute() / 60)) {
+                return true;
+            } else {
+                return false;
             }
         }
-        return false;
     }
 
     

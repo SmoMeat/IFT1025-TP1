@@ -2,7 +2,7 @@ import java.time.LocalTime;
 import java.util.Date;
 
 public class Exam {
-    private Date date = new Date();
+    private Date date = new Date(); //Date et l'heure de debut
     private double time;
     private String type;
 
@@ -40,6 +40,7 @@ public class Exam {
     public String toString() {
         String result = "";
 
+        // A ameliorer : Mettre un examen avec minute != 0
         int HStart = (int) this.date.getHours() + (int) this.time;
         LocalTime timeEnd = LocalTime.of(HStart, this.date.getMinutes());
         LocalTime timeStart = LocalTime.of(this.date.getHours(), this.date.getMinutes());

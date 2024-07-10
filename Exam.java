@@ -4,8 +4,8 @@ import java.time.LocalTime;
 public class Exam extends Period {
     private LocalDate date;
 
-    public Exam(LocalDate date, LocalTime start, LocalTime end, ClassType type) {
-        super(start, end, date.getDayOfWeek(), type);
+    public Exam(LocalDate date, LocalTime start, LocalTime end, ClassType type, String section) {
+        super(start, end, date.getDayOfWeek(), type, section);
         this.date = date;
     }
 

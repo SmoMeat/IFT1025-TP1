@@ -7,7 +7,7 @@ public class Student {
     private String lastname;
     private String matricule;
     private Schedule schedule = new Schedule();
-    private ArrayList<Course> takenCourses;
+    private ArrayList<Course> takenCourses = new ArrayList<>();
 
     /**
      * Construit un nouvel étudiant
@@ -42,8 +42,8 @@ public class Student {
         this.schedule = schedule;
     }
 
-    public String getSchedule() {
-        return schedule.toString();
+    public Schedule getSchedule() {
+        return this.schedule;
     }
 
     /**

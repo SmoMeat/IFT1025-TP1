@@ -6,12 +6,14 @@ public class Period {
     private LocalTime end;
     private DayOfWeek dayOfWeek;
     private ClassType type; // Le type du cours (Th, Tp ou Lab)
+    private String section;
 
-    public Period(LocalTime start, LocalTime end, DayOfWeek dayOfWeek, ClassType type) {
+    public Period(LocalTime start, LocalTime end, DayOfWeek dayOfWeek, ClassType type, String section) {
         this.start = start;
         this.end = end;
         this.dayOfWeek = dayOfWeek; //dayOfWeek % 7;
         this.type = type;
+        this.section = section;
     }
 
     public Period(Period other) {
@@ -19,6 +21,7 @@ public class Period {
         this.end = other.getEnd();
         this.dayOfWeek = other.getDayOfWeek();
         this.type = other.getType();
+        this.section = other.getSection();
     }
 
     // Getters et Setters des differents attributs
@@ -179,5 +182,12 @@ public class Period {
         }
     }
 
+    public String getSection() {
+        return this.section;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
+    }
     
 }

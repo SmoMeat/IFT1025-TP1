@@ -67,6 +67,7 @@ public class Cours {
     }
 
 
+
     private static Date stringToDate(String date) {
         Date result = new Date();
         String[] tabStart = date.split("-");

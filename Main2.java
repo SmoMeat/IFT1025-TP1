@@ -17,5 +17,9 @@ public class Main2 {
             schedule.printScheduleGrid();
         }
 
+        Schedule.genarateBestSchedule(courseList.mathInfoCourses,"A24", 14,16).printScheduleGrid();
+
+
+
     }
 }

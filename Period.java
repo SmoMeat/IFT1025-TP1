@@ -112,6 +112,27 @@ public class Period {
 
         return result;
     }
+
+    // Fin vs debut
+    public double timeBetweenV2(Period autre) {
+        // On calcule d'abord l'ecart d'heure selon le jour
+        double result = (autre.getDayOfWeek().getValue() - this.dayOfWeek.getValue()) * 24;
+
+        //On prend en compte les heures et minute
+        double hourThis = this.end.getHour();
+        double minuteThis = this.end.getMinute() / 60;
+
+        double hourTotEnd = hourThis + minuteThis;
+
+        double hourAutre = autre.start.getHour();
+        double minuteAutre = autre.start.getMinute() / 60;
+
+        double hourTotStart = hourAutre + minuteAutre;
+
+        result += (hourTotStart - hourTotEnd);
+
+        return result;
+    }
     
 
     /**
@@ -141,7 +162,6 @@ public class Period {
         if (Math.abs(this.timeBetween(autre)) >= Math.max(this.timeOf(), autre.timeOf())) {
             return false;
         }
-
         if (this.timeBetween(autre) < 0) {
             if ((this.start.getHour() + this.start.getMinute() / 60) < (autre.end.getHour() +
                     autre.end.getMinute() / 60)) {

@@ -1,4 +1,4 @@
-import java.time.LocalTime;
+/*import java.time.LocalTime;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -7,7 +7,7 @@ import java.util.Scanner;
  * @author Tristan Petit et Mathieu Ducharme
  *
  * Cette classe represente un cours qui l'ont peut ajouter a l'horaire des etudiants.
- */
+
 public class Cours {
     private int number; // Numero du cours
     private String subject; // Matiere (ex: "IFT")
@@ -81,7 +81,7 @@ public class Cours {
 
     /**
      * C'est le constructeur du cours. L'usager entre la date de debut et de fin de la forme: JJ-MM-AAAA
-     */
+
     public Cours(String subject, int number, int credit) {
         this.number = number;
         this.subject = subject;
@@ -210,3 +210,4 @@ public class Cours {
         }
     }
 }
+*/

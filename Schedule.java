@@ -267,8 +267,7 @@ public class Schedule {
         }
 
         System.out.println("╔═══════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╗");
-        System.out.println("║ " + String.format("%02d", getTotalCredits()) + " cr ║   Mon   ║   Tue   ║   Wed   ║  " +
-                "Thu   ║   Fri   ║   Sat   ║   Sun   ║");
+        System.out.println("║ " + String.format("%02d", getTotalCredits()) + " cr ║   Mon   ║   Tue   ║   Wed   ║  " + "Thu    ║   Fri   ║   Sat   ║   Sun   ║");
         System.out.println("╠═══════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╣");
         for (int i = 0; i < rows; i++) {
             String time = String.format("║ %02d:%02d", startHour.getHour() + (i / 2), (i % 2) * 30);

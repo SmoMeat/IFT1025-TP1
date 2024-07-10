@@ -50,7 +50,7 @@ public class Schedule {
         course.getSemesterByName(sessionName).getPeriods().forEach(period -> {
             schedule.get(period.getDayOfWeek()).add(new SchedulePeriod(course, period));
         });
-        totalCredits += course.getCredits();
+        totalCredits += course.getCredit();
     }
 
     public void addManyClasses(List<Course> courses, String sessionName) {
@@ -63,7 +63,7 @@ public class Schedule {
         course.getSemesterByName(sessionName).getPeriods().forEach(period -> {
             schedule.get(period.getDayOfWeek()).remove(period);
         });
-        totalCredits -= course.getCredits();
+        totalCredits -= course.getCredit();
     }
 
     public List<SchedulePeriod> getClassesForSpecifDay(DayOfWeek day) {
@@ -79,8 +79,8 @@ public class Schedule {
             copie.add(t);
         }
 
-        SchedulePeriod periodMin = new SchedulePeriod(new Course("IFT", 1015, 3, "A"),
-                new Period(LocalTime.of(10,30), LocalTime.of(12,30), DayOfWeek.TUESDAY, ClassType.TH));
+        SchedulePeriod periodMin = new SchedulePeriod(new Course("IFT", 1015, 3),
+                new Period(LocalTime.of(10,30), LocalTime.of(12,30), DayOfWeek.TUESDAY, ClassType.TH, "A"));
 
         while (!copie.isEmpty()) {
             int Mintime = 1000000;
@@ -122,9 +122,9 @@ public class Schedule {
     }
 
     public static List<Schedule> generateAllPossibleSchedules(ArrayList<Course> availableCourses, String sessionName) {
-        int length = availableCourses.size();
+        int length = availableCourses.size() > 10 ? 10 : availableCourses.size(); // maximum 10 cours dans un horaire
         List<Schedule> result = new ArrayList<>();
-        for (int n = 1; n <= length; n++) { // mettre la limite à 10
+        for (int n = 1; n <= length; n++) {
             generateScheduleHelper(availableCourses, n, 0, new ArrayList<>(Collections.nCopies(n, null)),
                     result, sessionName);
         }
@@ -261,13 +261,13 @@ public class Schedule {
                 int endSlot = (period.getEnd().getHour() - startHour.getHour()) * 2 +
                         (period.getEnd().getMinute() / 30);
                 for (int i = startSlot; i < endSlot; i++) {
-                    grid[i][dayIndex] = period.course.getName();
+                    grid[i][dayIndex] = period.course.getAbbreviatedName();
                 }
             }
         }
 
         System.out.println("╔═══════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╗");
-        System.out.println("║ " + String.format("%02d", getTotalCredits()) + " cr ║   Mon   ║   Tue   ║   Wed   ║  " +
+        System.out.println("║ " + String.format("%02d", getTotalCredits()) + " cr ║   Mon   ║   Tue   ║   Wed   ║   " +
                 "Thu   ║   Fri   ║   Sat   ║   Sun   ║");
         System.out.println("╠═══════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╣");
         for (int i = 0; i < rows; i++) {

@@ -1,11 +1,4 @@
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Scanner;
 
 /**
  * @author Tristan Petit et Mathieu Ducharme
@@ -13,43 +6,43 @@ import java.util.Scanner;
  * Cette classe represente un cours qui l'ont peut ajouter a l'horaire des etudiants.
  */
 public class Course {
-    private int number; // Numero du cours
+    private int value; // Numero du cours
     private String subject; // Matiere (ex: "IFT")
-    private int credits; // Nombre de credit
+    private String name; // ex: Calcul 1
+    private String description; // ex: Étude des dérivées et intégrales en 3 dimensions
+    private int credit; // Nombre de credit
     private ArrayList<Semester> semesters = new ArrayList<>();
-    private ArrayList<Exam> exams = new ArrayList<>();
     private ArrayList<Course> prerequisites = new ArrayList<>();
-    private String section;
-    // add name of course
 
 
     /**
      * Ce sont les constructeurs du cours. La liste de cours préalables est optionnelle.
      */
-    public Course(String subject, int number, int credit, String section) {
-        this.number = number;
+    public Course() {}
+    
+    public Course(String subject, int value, int credit) {
+        this.value = value;
         this.subject = subject;
-        this.credits = credit;
-        this.section = section;
+        this.credit = credit;
     }
 
-    public Course(String subject, int number, int credit, String section, ArrayList<Course> prerequisites) {
-        this.number = number;
+    public Course(String subject, int value, int credit, ArrayList<Course> prerequisites) {
+        this.value = value;
         this.subject = subject;
-        this.credits = credit;
-        this.section = section;
+        this.credit = credit;
         this.prerequisites = prerequisites;
     }
 
     @Override
     public String toString() {
-        return getName();
+        return getAbbreviatedName() + ": " + name + " (" + description + ") " + credit + " crédit avec " + semesters.size() + " semestres enregistrées";
+        // return getAbbreviatedName();
         // String result = "";
-        // result += this.subject + this.number + " - " + this.credits + " crédit\n";
+        // result += this.subject + this.value + " - " + this.credits + " crédit\n";
         // result += "Date de debut: " + this.start + "\n";
         // result += "Date de fin: " + this.start + "\n";
 
-        // for (Period horaire : periods) {
+        // for (Period horaire : se) {
         //     result += horaire.toString() + "\n";
         // }
 
@@ -146,34 +139,56 @@ public class Course {
     //     }
     // }
 
-    public void addExam(Exam exam) {
-        exams.add(exam);
-    }
-
-
-
     public void addPrerequisite(Course prerequisite) throws IllegalArgumentException {
         if (prerequisites.contains(prerequisite))
-            throw new IllegalArgumentException(getName() + " a déjà " + prerequisite.getName() + " comme préalable.");
+            throw new IllegalArgumentException(getAbbreviatedName() + " a déjà " + prerequisite.getAbbreviatedName() + " comme préalable.");
         prerequisites.add(prerequisite);
     }
 
-    public String getName() {
-        return this.subject + this.number;
+    public String getAbbreviatedName() {
+        return this.subject + this.value;
     }
 
 
     //Getters et Setters
-    public int getNumber() {
-        return this.number;
+    public int getValue() {
+        return this.value;
     }
 
-    public String getSubject(String subject) {
+    public void setValue(int number) {
+        this.value = number;
+    }
+
+    public String getSubject() {
         return this.subject;
     }
 
-    public int getCredits() {
-        return this.credits;
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getCredit() {
+        return this.credit;
+    }
+
+    public void setCredit(int credits) {
+        this.credit = credits;
     }
 
     public ArrayList<Semester> getSemesters() {
@@ -192,32 +207,7 @@ public class Course {
         this.semesters.add(semester);
     }
 
-    public ArrayList<Exam> getExams() {
-        return this.exams;
-    }
-
-    public String getSection() {
-        return this.section;
-    }
-
     public ArrayList<Course> getPrerequisites() {
         return this.prerequisites;
     }
-
-    public void setNumber(int number) {
-        this.number = number;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    public void setCredits(int credits) {
-        this.credits = credits;
-    }
-
-    public void setSection(String section) {
-        this.section = section;
-    }
-
 }

@@ -327,7 +327,7 @@ public class App {
         System.out.println("Quelle est la description du cours (ex: 'Concepts avancés : classes, objets, héritage, interfaces, réutilisation...'):");
         String description = scanner.nextLine();
 
-        System.out.println("Combien de crédits comport le cours cours:");
+        System.out.println("Combien de crédits comporte le cours cours:");
         int credit = askCourseCredit();
 
         System.out.println("Vous pouvez maintenant ajouteur un horaire pour un semestre.");
@@ -867,5 +867,4 @@ public class App {
             return askInt();
         }
     }
-    
 }

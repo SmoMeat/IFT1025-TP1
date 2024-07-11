@@ -202,8 +202,7 @@ public class Schedule {
         }
     }
 
-    public static List<Schedule> genarateSuitableSchedules(ArrayList<Course> availableCourses, int minCredits, int
-            maxCredits, String sessionName) {
+    public static List<Schedule> genarateSuitableSchedules(ArrayList<Course> availableCourses, int minCredits, int maxCredits, String sessionName) {
         ArrayList<Schedule> results = new ArrayList<>();
         for (Schedule schedule : generateAllPossibleSchedules(availableCourses, sessionName)) {
             if (schedule.getTotalCredits() < minCredits || schedule.getTotalCredits() > maxCredits)
@@ -217,9 +216,7 @@ public class Schedule {
         return results;
     }
 
-
-    public static Schedule genarateBestSchedule(ArrayList<Course> availableCourses, int creditMin,
-                                                int creditMax, String sessionName) {
+    public static Schedule genarateBestSchedule(ArrayList<Course> availableCourses, int creditMin, int creditMax, String sessionName) {
         ArrayList<Schedule> results = new ArrayList<>();
         Schedule bestSchedule = new Schedule();
         double bestScore = 0;

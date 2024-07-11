@@ -23,6 +23,7 @@ public class DbManager {
 
             // statement.executeUpdate("DROP TABLE IF EXISTS courses"); // à changer pour IF NOT EXISTS
             // statement.executeUpdate("DROP TABLE IF EXISTS semesters");
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS students (student_id INTEGER PRIMARY KEY, firstname TEXT NOT NULL, lastname TEXT NOT NULL, matricule INTEGER NOT NULL, schedule )");
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS courses (course_id INTEGER PRIMARY KEY, subject TEXT NOT NULL, value INTEGER NOT NULL, course_name TEXT, description TEXT, credit INTEGER NOT NULL)");
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS semesters (semester_id INTEGER PRIMARY KEY, semester_name TEXT NOT NULL, start_date DATE NOT NULL, end_date DATE NOT NULL, course_id INTEGER, FOREIGN KEY (course_id) REFERENCES courses(course_id))");
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS periods (period_id INTEGER PRIMARY KEY, start_time TIME NOT NULL, end_time TIME NOT NULL, day_of_week TEXT NOT NULL, type TEXT NOT NULL, section TEXT, semester_id INTEGER, FOREIGN KEY (semester_id) REFERENCES semesters(semester_id))");
@@ -135,7 +136,6 @@ public class DbManager {
             ResultSet rs = statement.executeQuery(sqlQuery);
 
             Course currentCourse = new Course();
-            // int previousCourseId = -1; int previousSemesterId = -1; int previousPeriodId = -1; int previousExamId = -1;
             String currentSemesterName = ""; 
 
             ArrayList<Integer> courseIds = new ArrayList<>();
@@ -150,26 +150,27 @@ public class DbManager {
                 int periodId = rs.getInt("period_id");
                 int examId = rs.getInt("exam_id");
 
-                // System.out.println("cours=" + courseId + " semester=" + semesterId + " period=" + periodId + " exam=" + examId);
+                //System.out.println("cours=" + courseId + " semester=" + semesterId + " period=" + periodId + " exam=" + examId);
 
                 if (!courseIds.contains(courseId)) {
                     currentCourse = new Course(rs.getString("subject"), rs.getInt("value"), rs.getInt("credit"));
                     courses.add(currentCourse);
                     courseIds.add(courseId);
                 }
-
-                if (!semesterIds.contains(semesterId)) {
+                
+                if (!semesterIds.contains(semesterId) && semesterId != 0) {
                     currentSemesterName = rs.getString("semester_name");
                     currentCourse.addSemester(new Semester(currentSemesterName, LocalDate.parse(rs.getString("start_date")), LocalDate.parse(rs.getString("end_date"))));
                     semesterIds.add(semesterId);
                 }
 
-                if (!periodIds.contains(periodId)) {
+
+                if (!periodIds.contains(periodId) && periodId != 0) {
                     currentCourse.getSemesterByName(currentSemesterName).addPeriod(new Period(LocalTime.parse(rs.getString("period_start")), LocalTime.parse(rs.getString("period_end")), DayOfWeek.valueOf(rs.getString("period_day")), ClassType.valueOf(rs.getString("period_type")), rs.getString("period_section")));
                     periodIds.add(periodId);
                 }
 
-                if (!examIds.contains(examId)) {
+                if (!examIds.contains(examId) && examId != 0) {
                     currentCourse.getSemesterByName(currentSemesterName).addExam(new Exam(LocalDate.parse(rs.getString("exam_date")), LocalTime.parse(rs.getString("exam_start")), LocalTime.parse(rs.getString("exam_end")), ClassType.valueOf(rs.getString("exam_type")), rs.getString("exam_section")));
                     examIds.add(examId);
                 }

@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Student {
@@ -7,7 +6,6 @@ public class Student {
     private String lastname;
     private String matricule;
     private Schedule schedule = new Schedule();
-    private ArrayList<Course> takenCourses;
 
     /**
      * Construit un nouvel étudiant
@@ -24,11 +22,13 @@ public class Student {
 
 
     public void addCourse(Course course, String sessionName) {
-        schedule.addClass(course, sessionName);
+        schedule.addCourse(course, sessionName);
     }
 
     public void generateBestSchedule(ArrayList<Course> availableCourses, String semesterName) {
-        availableCourses.removeAll(takenCourses);
+        for (Course course : availableCourses) {
+            availableCourses.remove(course);
+        }
         List<Schedule> schedules =  Schedule.genarateSuitableSchedules(availableCourses, 14, 16, semesterName);
     }
 
@@ -36,8 +36,8 @@ public class Student {
         this.schedule = schedule;
     }
 
-    public String getSchedule() {
-        return schedule.toString();
+    public Schedule getSchedule() {
+        return this.schedule;
     }
 
     /**

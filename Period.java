@@ -6,12 +6,14 @@ public class Period {
     private LocalTime end;
     private DayOfWeek dayOfWeek;
     private ClassType type; // Le type du cours (Th, Tp ou Lab)
+    private String section;
 
-    public Period(LocalTime start, LocalTime end, DayOfWeek dayOfWeek, ClassType type) {
+    public Period(LocalTime start, LocalTime end, DayOfWeek dayOfWeek, ClassType type, String section) {
         this.start = start;
         this.end = end;
         this.dayOfWeek = dayOfWeek; //dayOfWeek % 7;
         this.type = type;
+        this.section = section;
     }
 
     public Period(Period other) {
@@ -19,6 +21,7 @@ public class Period {
         this.end = other.getEnd();
         this.dayOfWeek = other.getDayOfWeek();
         this.type = other.getType();
+        this.section = other.getSection();
     }
 
     // Getters et Setters des differents attributs
@@ -58,7 +61,7 @@ public class Period {
     public String toString() {
         String result = "";
         String jours = "Dimanche";
-        result += this.type + " - ";
+        result += this.type + ": ";
 
         switch (this.dayOfWeek) {
             case DayOfWeek.MONDAY:
@@ -80,7 +83,7 @@ public class Period {
                 jours = "Samedi";
                 break;
         }
-        result += jours + " De " + this.start.toString() + " à " + this.end.toString();
+        result += jours + " de " + this.start.toString() + " à " + this.end.toString();
         return result;
     }
 
@@ -113,8 +116,27 @@ public class Period {
         return result;
     }
 
-    
+    // Fin vs debut
+    public double timeBetweenV2(Period autre) {
+        // On calcule d'abord l'ecart d'heure selon le jour
+        double result = (autre.getDayOfWeek().getValue() - this.dayOfWeek.getValue()) * 24;
 
+        //On prend en compte les heures et minute
+        double hourThis = this.end.getHour();
+        double minuteThis = this.end.getMinute() / 60;
+
+        double hourTotEnd = hourThis + minuteThis;
+
+        double hourAutre = autre.start.getHour();
+        double minuteAutre = autre.start.getMinute() / 60;
+
+        double hourTotStart = hourAutre + minuteAutre;
+
+        result += (hourTotStart - hourTotEnd);
+
+        return result;
+    }
+    
 
     /**
      * Cette fonction
@@ -140,25 +162,32 @@ public class Period {
     public boolean inConflict(Period autre) {
         if (this.timeBetween(autre) == 0)
             return true;
-        if (Math.abs(this.timeBetween(autre)) < Math.max(this.timeOf(), autre.timeOf())) {
-            if (this.timeBetween(autre) < 0) {
-                if ((this.start.getHour() + this.start.getMinute() / 60) < (autre.end.getHour() +
-                        autre.end.getMinute() / 60)) {
-                    return true;
-                } else {
-                    return false;
-                }
+        if (Math.abs(this.timeBetween(autre)) >= Math.max(this.timeOf(), autre.timeOf())) {
+            return false;
+        }
+        if (this.timeBetween(autre) < 0) {
+            if ((this.start.getHour() + this.start.getMinute() / 60) < (autre.end.getHour() +
+                    autre.end.getMinute() / 60)) {
+                return true;
             } else {
-                if ((autre.start.getHour() + autre.start.getMinute() / 60) < (this.end.getHour() +
-                        this.end.getMinute() / 60)) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return false;
+            }
+        } else {
+            if ((autre.start.getHour() + autre.start.getMinute() / 60) < (this.end.getHour() +
+                    this.end.getMinute() / 60)) {
+                return true;
+            } else {
+                return false;
             }
         }
-        return false;
     }
 
+    public String getSection() {
+        return this.section;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
+    }
     
 }

@@ -1,5 +1,5 @@
 // pas utile pour maintenant
-
+/*
 enum Program {
     MATHINFO("Baccalauréat en mathématiques et informatique", 91, 1, "1-191-1-0"),
     INFO();
@@ -19,4 +19,4 @@ enum Program {
 
 public class ProgramDto {
 
-}
+}*/

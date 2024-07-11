@@ -18,17 +18,25 @@ public class Schedule {
     }
 
     private Map<DayOfWeek, List<SchedulePeriod>> schedule;
+    private String semesterName;
     private int totalCredits;
 
-    public Schedule() {
+    public String getSemesterName() {
+        return this.semesterName;
+    }
+
+    public Schedule() {}
+
+    public Schedule(String semesterName) {
         schedule = new HashMap<>();
         for (DayOfWeek day : DayOfWeek.values()) {
             schedule.put(day, new ArrayList<>());
         }
+        this.semesterName = semesterName;
     }
 
     public Schedule(Schedule other) {
-        this();
+        this(other.getSemesterName());
         for (DayOfWeek day : DayOfWeek.values()) {
             for (SchedulePeriod period : other.schedule.get(day)) {
                 schedule.get(day).add(period);
@@ -37,24 +45,25 @@ public class Schedule {
         this.totalCredits = other.totalCredits;
     }
 
-    public Schedule(List<Course> courses, String sessionName) {
-        this();
-        addManyClasses(courses, sessionName);
+    public Schedule(List<Course> courses, String semesterName) {
+        this(semesterName);
+        addManyClasses(courses, semesterName);
     }
 
-    public void addClass(Course course, String sessionName) {
+    public void addCourse(Course course, String sessionName) {
+        // TODO: vérifier conflit d'horaire
         if (course.getSemesterByName(sessionName) == null) {
             return;
         }
         course.getSemesterByName(sessionName).getPeriods().forEach(period -> {
             schedule.get(period.getDayOfWeek()).add(new SchedulePeriod(course, period));
         });
-        totalCredits += course.getCredits();
+        totalCredits += course.getCredit();
     }
 
     public void addManyClasses(List<Course> courses, String sessionName) {
         for (Course course : courses) {
-            addClass(course, sessionName);
+            addCourse(course, sessionName);
         }
     }
 
@@ -62,32 +71,117 @@ public class Schedule {
         course.getSemesterByName(sessionName).getPeriods().forEach(period -> {
             schedule.get(period.getDayOfWeek()).remove(period);
         });
-        totalCredits -= course.getCredits();
+        totalCredits -= course.getCredit();
     }
 
     public List<SchedulePeriod> getClassesForSpecifDay(DayOfWeek day) {
         return schedule.get(day);
     }
 
-    public boolean hasConflict() {
-        for (DayOfWeek day : DayOfWeek.values()) {
-            List<SchedulePeriod> periods = schedule.get(day);
-            for (int i = 0; i < periods.size(); i++) {
-                for (int j = i + 1; j < periods.size(); j++) {
-                    if (periods.get(i).inConflict(periods.get(j))) {
-                        return true;
-                    }
+    public List<SchedulePeriod> order(DayOfWeek day) {
+        List<SchedulePeriod> Speriod = this.schedule.get(day);
+        ArrayList<SchedulePeriod> copie = new ArrayList<>();
+        ArrayList<SchedulePeriod> result = new ArrayList<>();
+
+        for (SchedulePeriod t : Speriod) {
+            copie.add(t);
+        }
+
+        SchedulePeriod periodMin = new SchedulePeriod(new Course("IFT", 1015, 3),
+                new Period(LocalTime.of(10,30), LocalTime.of(12,30), DayOfWeek.TUESDAY, ClassType.TH, "A"));
+
+        while (!copie.isEmpty()) {
+            int Mintime = 1000000;
+            for (SchedulePeriod period : copie) {
+                int currentTime = 0;
+                currentTime = period.getStart().getHour() * 60 + period.getStart().getMinute();
+
+                if (currentTime < Mintime) {
+                    Mintime = currentTime;
+                    periodMin = period;
+                }
+            }
+
+            result.add(periodMin);
+            copie.remove(periodMin);
+        }
+        return result;
+    }
+
+    public ArrayList<Course> getCourses() {
+        ArrayList<Course> courses = new ArrayList<>();
+        
+        for (DayOfWeek dayOfWeek : DayOfWeek.values()) {
+            for (SchedulePeriod schedulePeriod : schedule.get(dayOfWeek)) {
+                if (!courses.contains(schedulePeriod.course))
+                    courses.add(schedulePeriod.course);
+            }
+        }
+
+        return courses;
+    }
+
+    public ArrayList<Exam> getExams() {
+        ArrayList<Exam> exams = new ArrayList<>();
+        getCourses().forEach(course -> exams.addAll(course.getSemesterByName(semesterName).getExams()));
+        return exams;
+    }
+
+    public boolean hasExamsConflict() {
+        for (Exam exam1 : getExams()) {
+            for (Exam exam2 : getExams()) {
+                if (!exam1.getDate().equals(exam2.getDate()))
+                    continue;
+
+                if (exam1.inConflict(exam2))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public double getTimeBetweenExamsScore() {
+        double value = 0;
+        for (Exam exam1 : getExams()) {
+            for (Exam exam2 : getExams()) {
+                double timeBetween = exam1.timeBetweenV2(exam2);
+
+                if (timeBetween >= 0 )
+                    value += timeBetween;
+            }
+        }
+        return value;
+    }
+
+    public boolean hasConflictDay(DayOfWeek day) {
+        List<SchedulePeriod> periods = schedule.get(day);
+        for (int i = 0; i < periods.size(); i++) {
+            for (int j = i + 1; j < periods.size(); j++) {
+                if (periods.get(i).inConflict(periods.get(j))) {
+                    return true;
                 }
             }
         }
         return false;
     }
 
+    public boolean hasConflict() {
+        for (DayOfWeek day : DayOfWeek.values()) {
+            if (this.hasConflictDay(day)) {
+                return true;
+            }
+
+        }
+
+        return false;
+    }
+
     public static List<Schedule> generateAllPossibleSchedules(ArrayList<Course> availableCourses, String sessionName) {
-        int length = availableCourses.size();
+        int length = availableCourses.size() > 10 ? 10 : availableCourses.size(); // maximum 10 cours dans un horaire
         List<Schedule> result = new ArrayList<>();
         for (int n = 1; n <= length; n++) {
-            generateScheduleHelper(availableCourses, n, 0, new ArrayList<>(Collections.nCopies(n, null)), result, sessionName);
+            generateScheduleHelper(availableCourses, n, 0, new ArrayList<>(Collections.nCopies(n, null)),
+                    result, sessionName);
         }
         return result;
     }
@@ -96,7 +190,8 @@ public class Schedule {
     // start: index actuel de la liste
     // selections: les cours actuellement séléctionnés
     // result: liste de toutes les horaires
-    private static void generateScheduleHelper(List<Course> list, int n, int start, List<Course> selections, List<Schedule> result, String sessionName) {
+    private static void generateScheduleHelper(List<Course> list, int n, int start, List<Course> selections,
+                                               List<Schedule> result, String sessionName) {
         if (n == 0) {
             result.add(new Schedule(selections, sessionName));
         } else {
@@ -107,7 +202,8 @@ public class Schedule {
         }
     }
 
-    public static List<Schedule> genarateSuitableSchedules(ArrayList<Course> availableCourses, int minCredits, int maxCredits, String sessionName) {
+    public static List<Schedule> genarateSuitableSchedules(ArrayList<Course> availableCourses, int minCredits, int
+            maxCredits, String sessionName) {
         ArrayList<Schedule> results = new ArrayList<>();
         for (Schedule schedule : generateAllPossibleSchedules(availableCourses, sessionName)) {
             if (schedule.getTotalCredits() < minCredits || schedule.getTotalCredits() > maxCredits)
@@ -119,6 +215,76 @@ public class Schedule {
             results.add(schedule);
         }
         return results;
+    }
+
+
+    public static Schedule genarateBestSchedule(ArrayList<Course> availableCourses, int creditMin,
+                                                int creditMax, String sessionName) {
+        ArrayList<Schedule> results = new ArrayList<>();
+        Schedule bestSchedule = new Schedule();
+        double bestScore = 0;
+        for (Schedule schedule : generateAllPossibleSchedules(availableCourses, sessionName)) {
+            if (schedule.getTotalCredits() < creditMin || schedule.getTotalCredits() > creditMax)
+                continue;
+
+            double currentScore = schedule.getScheduleScore();
+
+            if (currentScore > bestScore) {
+                bestSchedule = schedule;
+                bestScore = currentScore;
+            }            
+        }
+        return bestSchedule;
+    }
+
+    public double getScheduleScore() {
+        double point = 0;
+        double time = 0;
+
+        for (DayOfWeek day : DayOfWeek.values()) {
+            List<SchedulePeriod> schedule = this.schedule.get(day);
+
+            // On attribut 5 points s'il n'y a pas de conflits dans la journee
+            if (!this.hasConflictDay(day)) {
+                point += 5;
+            }
+
+            // Si on a plus au moins 1h entre deux cours, on ajoute 2 points
+            List<SchedulePeriod> orderSchedule = this.order(day);
+            for (int i = 0; i < orderSchedule.size() - 1; i++) {
+                if (orderSchedule.get(i).timeBetweenV2(orderSchedule.get(i + 1)) >= 1) {
+                    point += 1;
+                }
+            }
+
+
+            for (SchedulePeriod schedulePeriod : schedule) {
+                time += schedulePeriod.timeOf();
+            }
+            /* Si dans la journee, on compte plus de 10 heures de cours, on n'attribut aucun point.
+            Sinon, on attribut
+            1 point pour 10h
+            2 points pour 9h
+            ...
+            5 points pour 6h
+            6 points pour 5h a 1h
+            10 points pour 0h (journee de conge)
+             */
+            if (time > 10) {
+                continue;
+            }
+            if (time > 5) {
+                point += 11 - time;
+                continue;
+            }
+            if (time == 0) {
+                point += 10;
+            }
+
+            point += 6;
+        }
+
+        return point + getTimeBetweenExamsScore() * 0.05;
     }
 
     @Override
@@ -135,7 +301,7 @@ public class Schedule {
 
     public void printScheduleGrid() {
         LocalTime startHour = LocalTime.of(8, 0);
-        LocalTime endHour = LocalTime.of(19, 0);
+        LocalTime endHour = LocalTime.of(20, 0);
         int rows = (endHour.getHour() - startHour.getHour()) * 2;
         String[][] grid = new String[rows + 1][7];
 
@@ -146,16 +312,19 @@ public class Schedule {
         for (DayOfWeek day : DayOfWeek.values()) {
             for (SchedulePeriod period : schedule.get(day)) {
                 int dayIndex = day.getValue() - 1;
-                int startSlot = (period.getStart().getHour() - startHour.getHour()) * 2 + (period.getStart().getMinute() / 30);
-                int endSlot = (period.getEnd().getHour() - startHour.getHour()) * 2 + (period.getEnd().getMinute() / 30);
+                int startSlot = (period.getStart().getHour() - startHour.getHour()) * 2 +
+                        (period.getStart().getMinute() / 30);
+                int endSlot = (period.getEnd().getHour() - startHour.getHour()) * 2 +
+                        (period.getEnd().getMinute() / 30);
                 for (int i = startSlot; i < endSlot; i++) {
-                    grid[i][dayIndex] = period.course.getName();
+                    grid[i][dayIndex] = period.course.getAbbreviatedName();
                 }
             }
         }
 
         System.out.println("╔═══════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╗");
-        System.out.println("║ " + String.format("%02d", getTotalCredits()) + " cr ║   Mon   ║   Tue   ║   Wed   ║   Thu   ║   Fri   ║   Sat   ║   Sun   ║");
+        System.out.println("║ " + String.format("%02d", getTotalCredits()) + " cr ║   Mon   ║   Tue   ║   Wed   ║   " +
+                "Thu   ║   Fri   ║   Sat   ║   Sun   ║");
         System.out.println("╠═══════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╣");
         for (int i = 0; i < rows; i++) {
             String time = String.format("║ %02d:%02d", startHour.getHour() + (i / 2), (i % 2) * 30);
@@ -165,7 +334,15 @@ public class Schedule {
             }
             System.out.println();
         }
-        System.out.println("╚═══════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╝");
+        
+        System.out.println("╠═══════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╣");
+
+        for (Exam exam : getExams()) {
+            System.out.println("║ " + exam + "\t\t\t\t\t\t      ║");
+        }
+        
+        System.out.println("╚═════════════════════════════════════════════════════════════════════════════╝");
+
     }
 
     public int getTotalCredits() {

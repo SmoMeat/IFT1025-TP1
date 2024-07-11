@@ -5,7 +5,8 @@ public class Semester {
     private String name; // ex: A24, H25
     private LocalDate start;
     private LocalDate end;
-    private ArrayList<Period> periods;
+    private ArrayList<Period> periods = new ArrayList<>();
+    private ArrayList<Exam> exams = new ArrayList<>();
 
     /**
      * Construit une nouvelle session universitaire.
@@ -14,12 +15,28 @@ public class Semester {
      * @param start    la date de début de la session
      * @param end      la date de fin de la session
      * @param periods  la liste des périodes dans la session
+     * @param exams    la liste des examens dans la session
      */
-    public Semester(String name, LocalDate start, LocalDate end, ArrayList<Period> periods) {
+    public Semester(String name, LocalDate start, LocalDate end, ArrayList<Period> periods, ArrayList<Exam> exams) {
         this.name = name;
         this.start = start;
         this.end = end;
         this.periods = periods;
+        this.exams = exams;
+    }
+
+    /**
+     * Construit une nouvelle session universitaire sans examens et périodes.
+     *
+     * @param name     l'identifiant de la session, par exemple A24, H25
+     * @param start    la date de début de la session
+     * @param end      la date de fin de la session
+     * @param periods  la liste des périodes dans la session
+     */
+    public Semester(String name, LocalDate start, LocalDate end) {
+        this.name = name;
+        this.start = start;
+        this.end = end;
     }
 
     /**
@@ -90,16 +107,110 @@ public class Semester {
      *
      * @param period la période à ajouter
      */
-    public void addPeriods(Period period) {
+    public void addPeriod(Period period) {
         this.periods.add(period);
     }
 
     /**
-     * Retire à la liste des périodes dans la session une nouvelle période
+     * Ajoute à la liste des périodes dans la session des nouvelles périodes
      *
-     * @param periods la période à enlever
+     * @param periods la liste de périodes à ajouter
      */
-    public void removePeriods(Period period) {
+    public void addPeriods(ArrayList<Period> periods) {
+        this.periods.addAll(periods);
+    }
+
+    /**
+     * Retire à la liste des périodes dans la session une période
+     *
+     * @param period la période à enlever
+     */
+    public void removePeriod(Period period) {
         this.periods.remove(period);
+    }
+
+    /**
+     * Retire à la liste des périodes dans la session plusieurs périodes
+     *
+     * @param periods la liste de périodes à enlever
+     */
+    public void removePeriods(ArrayList<Period>  periods) {
+        this.periods.removeAll(periods);
+    }
+
+    /**
+     * Obtient la liste des périodes dans la session.
+     *
+     * @return la liste des périodes
+     */
+    public ArrayList<Exam> getExams() {
+        return exams;
+    }
+
+    /**
+     * Ajoute à la liste des examens dans la session un nouvel examen
+     *
+     * @param exam l'examen à ajouter
+     */
+    public void addExam(Exam exam) {
+        this.exams.add(exam);
+    }
+
+    /**
+     * Ajoute à la liste des examens dans la session plusieurs nouveaux examens
+     *
+     * @param exams la liste d'examens à ajouter
+     */
+    public void addExams(ArrayList<Exam> exams) {
+        this.exams.addAll(exams);
+    }
+
+    /**
+     * Retire à la liste des examens dans la session un examen
+     *
+     * @param exam l'examen à enlever
+     */
+    public void removeExam(Exam exam) {
+        this.exams.remove(exam);
+    }
+
+    /**
+     * Retire à la liste des examens dans la session plusieurs examens
+     *
+     * @param exams la liste d'examens à enlever
+     */
+    public void removeExams(ArrayList<Exam> exams) {
+        this.exams.removeAll(exams);
+    }
+
+    public String getPeriodsAsString() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 0; i < periods.size(); i++) {
+            stringBuilder.append(periods.get(i));
+            if (i < periods.size() - 1) {
+                stringBuilder.append(", ");
+            }
+        }
+
+        return stringBuilder.toString();
+    }
+
+    public String getExamsAsString() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 0; i < exams.size(); i++) {
+            stringBuilder.append(exams.get(i));
+            if (i < exams.size() - 1) {
+                stringBuilder.append(", ");
+            }
+        }
+
+        return stringBuilder.toString();
+    }
+
+    public String toString() {
+        return name + " de " + start + " à " + end + " avec les périodes " + getPeriodsAsString() + " et les examens " + getExamsAsString();
+        // return name + " de " + start + " à " + end + " avec " + periods.size() + " périodes et " + exams.size() + " examens";
     }
 }

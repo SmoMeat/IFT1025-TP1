@@ -24,7 +24,7 @@ public class CourseList {
     public static void main(String[] args) {
         DbManager dbManager = new DbManager();
         CourseList courseList = new CourseList();
-        dbManager.addAllCourses(courseList.mathInfoCourses);
+        dbManager.saveToDB(courseList.mathInfoCourses);
     }
 
     public CourseList() {

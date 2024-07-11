@@ -14,6 +14,7 @@ public class App {
     static ArrayList<Student> students = new ArrayList<>();
 
     public static void main(String[] args) {
+        System.out.println("test");
         System.err.println("\t*-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-*");
         System.out.println("\t\tBienvenue sur le planificateur académique");
         System.out.println("<!> " + courses.size() + " cours et " + students.size() + " étudiants ont été récupérés dans la base de données <!>");

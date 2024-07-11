@@ -23,11 +23,13 @@ public class DbManager {
 
             // statement.executeUpdate("DROP TABLE IF EXISTS courses"); // à changer pour IF NOT EXISTS
             // statement.executeUpdate("DROP TABLE IF EXISTS semesters");
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS students (student_id INTEGER PRIMARY KEY, firstname TEXT NOT NULL, lastname TEXT NOT NULL, matricule INTEGER NOT NULL, schedule )");
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS courses (course_id INTEGER PRIMARY KEY, subject TEXT NOT NULL, value INTEGER NOT NULL, course_name TEXT, description TEXT, credit INTEGER NOT NULL)");
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS semesters (semester_id INTEGER PRIMARY KEY, semester_name TEXT NOT NULL, start_date DATE NOT NULL, end_date DATE NOT NULL, course_id INTEGER, FOREIGN KEY (course_id) REFERENCES courses(course_id))");
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS periods (period_id INTEGER PRIMARY KEY, start_time TIME NOT NULL, end_time TIME NOT NULL, day_of_week TEXT NOT NULL, type TEXT NOT NULL, section TEXT, semester_id INTEGER, FOREIGN KEY (semester_id) REFERENCES semesters(semester_id))");
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS exams (exam_id INTEGER PRIMARY KEY, start_time TIME NOT NULL, end_time TIME NOT NULL, day_of_week TEXT NOT NULL, type TEXT NOT NULL, section TEXT, date DATE NOT NULL, semester_id INTEGER, FOREIGN KEY (semester_id) REFERENCES semesters(semester_id))");
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS students (student_id INTEGER PRIMARY KEY, firstname TEXT NOT NULL, lastname TEXT NOT NULL, matricule INTEGER NOT NULL)");
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS schedules (schedule_id INTEGER PRIMARY KEY, student_id INTEGER NOT NULL, FOREIGN KEY (student_id) REFERENCES students(student_id) )");
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS schedule_periods (schedule_period_id INTEGER PRIMARY KEY, course_id INTEGER NOT NULL, period_id INTEGER NOT NULL, schedule_id INTEGER NOT NULL, FOREIGN KEY (course_id) REFERENCES courses(course_id), FOREIGN KEY (period_id) REFERENCES periods(period_id), FOREIGN KEY (schedule_id) REFERENCES schedules(schedule_id) )");
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
@@ -50,18 +52,26 @@ public class DbManager {
     }
 
 
-    public void addAllCourses(List<Course> courses) {
+    public void saveToDB(List<Course> courses, List<Student> students) {
         try {
             statement.executeUpdate("DROP TABLE IF EXISTS courses");
             statement.executeUpdate("DROP TABLE IF EXISTS semesters");
             statement.executeUpdate("DROP TABLE IF EXISTS periods");
             statement.executeUpdate("DROP TABLE IF EXISTS exams");
+            statement.executeUpdate("DROP TABLE IF EXISTS students");
+            statement.executeUpdate("DROP TABLE IF EXISTS schedules");
+            statement.executeUpdate("DROP TABLE IF EXISTS schedule_periods");
+
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS courses (course_id INTEGER PRIMARY KEY, subject TEXT NOT NULL, value INTEGER NOT NULL, course_name TEXT, description TEXT, credit INTEGER NOT NULL)");
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS semesters (semester_id INTEGER PRIMARY KEY, semester_name TEXT NOT NULL, start_date DATE NOT NULL, end_date DATE NOT NULL, course_id INTEGER, FOREIGN KEY (course_id) REFERENCES courses(course_id))");
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS periods (period_id INTEGER PRIMARY KEY, start_time TIME NOT NULL, end_time TIME NOT NULL, day_of_week TEXT NOT NULL, type TEXT NOT NULL, section TEXT, semester_id INTEGER, FOREIGN KEY (semester_id) REFERENCES semesters(semester_id))");
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS exams (exam_id INTEGER PRIMARY KEY, start_time TIME NOT NULL, end_time TIME NOT NULL, day_of_week TEXT NOT NULL, type TEXT NOT NULL, section TEXT, date DATE NOT NULL, semester_id INTEGER, FOREIGN KEY (semester_id) REFERENCES semesters(semester_id))");
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS students (student_id INTEGER PRIMARY KEY, firstname TEXT NOT NULL, lastname TEXT NOT NULL, matricule INTEGER NOT NULL)");
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS schedules (schedule_id INTEGER PRIMARY KEY, student_id INTEGER NOT NULL, FOREIGN KEY (student_id) REFERENCES students(student_id) )");
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS schedule_periods (schedule_period_id INTEGER PRIMARY KEY, course_id INTEGER NOT NULL, period_id INTEGER NOT NULL, schedule_id INTEGER NOT NULL, FOREIGN KEY (course_id) REFERENCES courses(course_id), FOREIGN KEY (period_id) REFERENCES periods(period_id), FOREIGN KEY (schedule_id) REFERENCES schedules(schedule_id) )");
         
             courses.forEach(course -> addCourse(course));
+            students.forEach(student -> addStudent(student));
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
@@ -76,6 +86,66 @@ public class DbManager {
             addSemesters(course.getSemesters(), statement.executeQuery("SELECT last_insert_rowid()").getInt(1));
         } catch (Exception e) {
             e.printStackTrace(System.err);
+        }
+    }
+
+    public void addStudent(Student student) {
+        try {
+            String sqlQuery = String.format("INSERT INTO students (firstname, lastname, matricule) VALUES ('%s', '%s', '%s')",
+                                            student.getFirstname(), student.getLastname(), student.getMatricule());
+            statement.executeUpdate(sqlQuery);
+            addSchedule(student.getSchedule(), statement.executeQuery("SELECT last_insert_rowid()").getInt(1));
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
+    }
+
+    public void addSchedule(Schedule schedule, int studentId) {
+        try {
+            String sqlQuery = String.format("INSERT INTO schedules (student_id) VALUES (%d)", studentId);
+            statement.executeUpdate(sqlQuery);
+
+            int scheduleId = statement.executeQuery("SELECT last_insert_rowid()").getInt(1);
+            schedule.getSchedulePeriods().forEach(schedulePeriod -> addSchedulePeriod(schedulePeriod, scheduleId));
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
+    }
+
+    public void addSchedulePeriod(Schedule.SchedulePeriod schedulePeriod, int scheduleId) {
+        try {
+            String sqlQuery = String.format("INSERT INTO schedule_periods (course_id, period_id, schedule_id) VALUES (%d, %d, %d)",
+                                            getCourseId(schedulePeriod.course), getPeriodId((Period) schedulePeriod), scheduleId);
+            statement.executeUpdate(sqlQuery);
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
+    }
+
+    public int getCourseId(Course course) {
+        try {
+            String description = course.getDescription().isEmpty() ? "null" : course.getDescription();
+            String sqlQuery = String.format("SELECT course_id FROM courses WHERE subject='%s' AND value=%d AND course_name='%s' AND description='%s' AND credit=%d;",
+                                            course.getSubject(), course.getValue(), course.getName(), description, course.getCredit());
+            ResultSet rs = statement.executeQuery(sqlQuery);
+
+            return rs.getInt("course_id");
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+            return 0;
+        }
+    }
+
+    public int getPeriodId(Period period) {
+        try {
+            String sqlQuery = String.format("SELECT period_id FROM periods WHERE start_time='%s' AND end_time='%s' AND day_of_week='%s' AND type='%s' AND section='%s';",
+                                            period.getStart(), period.getEnd(), period.getDayOfWeek(), period.getType(), period.getSection());
+            ResultSet rs = statement.executeQuery(sqlQuery);
+
+            return rs.getInt("period_id");
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+            return 0;
         }
     }
 
@@ -153,7 +223,7 @@ public class DbManager {
                 //System.out.println("cours=" + courseId + " semester=" + semesterId + " period=" + periodId + " exam=" + examId);
 
                 if (!courseIds.contains(courseId)) {
-                    currentCourse = new Course(rs.getString("subject"), rs.getInt("value"), rs.getInt("credit"));
+                    currentCourse = new Course(rs.getString("subject"), rs.getInt("value"), rs.getString("course_name"), rs.getString("description"), rs.getInt("credit"));
                     courses.add(currentCourse);
                     courseIds.add(courseId);
                 }

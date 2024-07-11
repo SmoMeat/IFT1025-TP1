@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Schedule {
-    private class SchedulePeriod extends Period {
+    public class SchedulePeriod extends Period {
         public Course course;
 
         SchedulePeriod(Course course, Period period) {
@@ -20,10 +20,6 @@ public class Schedule {
     private Map<DayOfWeek, List<SchedulePeriod>> schedule;
     private String semesterName;
     private int totalCredits;
-
-    public String getSemesterName() {
-        return this.semesterName;
-    }
 
     public Schedule() {}
 
@@ -106,6 +102,22 @@ public class Schedule {
             copie.remove(periodMin);
         }
         return result;
+    }
+
+    public String getSemesterName() {
+        return this.semesterName;
+    }
+
+    public ArrayList<SchedulePeriod> getSchedulePeriods() {
+        ArrayList<SchedulePeriod> schedulePeriods = new ArrayList<>();
+
+        for (DayOfWeek dayOfWeek: DayOfWeek.values()) {
+            for (SchedulePeriod schedulePeriod : schedule.get(dayOfWeek)) {
+                schedulePeriods.add(schedulePeriod);
+            }
+        }
+
+        return schedulePeriods;
     }
 
     public ArrayList<Course> getCourses() {

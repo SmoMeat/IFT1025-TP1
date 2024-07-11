@@ -14,8 +14,16 @@ public class App {
     static ArrayList<Student> students = new ArrayList<>();
 
     public static void main(String[] args) {
+        System.err.println("\t*-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-*");
+        System.out.println("\t\tBienvenue sur le planificateur académique");
+        System.out.println("<!> " + courses.size() + " cours et " + students.size() + " étudiants ont été récupérés dans la base de données <!>");
+        System.err.println("\t*-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-*\n");
 
-        System.out.println(getStartingMessage());
+        String mainMenu = "Entrez: (1) pour accéder à la gestion des cours"
+                        + "\n\t(2) pour accéder à la gestion des horaires d'étudiants"
+                        + "\n\t(stop) pour fermer et sauvegarder le programme";
+
+        System.out.println(mainMenu);
 
         while (!(userInput = scanner.nextLine()).equalsIgnoreCase("stop")) {
             switch (userInput) {
@@ -27,10 +35,10 @@ public class App {
                     askGestionEtudiants();
                     break;
             }
-            System.out.println(getStartingMessage());
+            System.out.println(mainMenu);
         }
 
-        dbManager.addAllCourses(courses);
+        dbManager.saveToDB(courses, students);
     }
 
     public static void askCoursManager() {
@@ -504,12 +512,6 @@ public class App {
                 + "\n\t(4) pour modifier un cours existant"
                 + "\n\t(5) pour supprimer un cours existant"
                 + "\n\t(back) pour revenir au menu principal";
-    }
-
-    public static String getStartingMessage() {
-        return "Entrez: (1) pour accéder à la gestion des cours"
-                + "\n\t(2) pour accéder à la gestion des horaires d'étudiants"
-                + "\n\t(stop) pour arreter le programme";
     }
 
     public static String getGestionEtudiantMessage() {

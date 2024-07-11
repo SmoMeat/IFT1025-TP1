@@ -6,8 +6,8 @@ import java.util.ArrayList;
  * Cette classe represente un cours qui l'ont peut ajouter a l'horaire des etudiants.
  */
 public class Course {
-    private int value; // Numero du cours
     private String subject; // Matiere (ex: "IFT")
+    private int value; // Numero du cours
     private String name; // ex: Calcul 1
     private String description; // ex: Étude des dérivées et intégrales en 3 dimensions
     private int credit; // Nombre de credit
@@ -21,8 +21,8 @@ public class Course {
     public Course() {}
     
     public Course(String subject, int value, int credit) {
-        this.value = value;
         this.subject = subject;
+        this.value = value;
         this.credit = credit;
     }
 
@@ -35,8 +35,8 @@ public class Course {
     }
 
     public Course(String subject, int value, int credit, ArrayList<Course> prerequisites) {
-        this.value = value;
         this.subject = subject;
+        this.value = value;
         this.credit = credit;
         this.prerequisites = prerequisites;
     }

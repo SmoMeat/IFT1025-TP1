@@ -315,48 +315,50 @@ public class Schedule {
     }
 
     public void printScheduleGrid() {
-        LocalTime startHour = LocalTime.of(8, 0);
-        LocalTime endHour = LocalTime.of(20, 0);
-        int rows = (endHour.getHour() - startHour.getHour()) * 2;
-        String[][] grid = new String[rows + 1][7];
+        if (this.schedule != null) {
+            LocalTime startHour = LocalTime.of(8, 0);
+            LocalTime endHour = LocalTime.of(20, 0);
+            int rows = (endHour.getHour() - startHour.getHour()) * 2;
+            String[][] grid = new String[rows + 1][7];
 
-        for (int i = 0; i < rows; i++) {
-            Arrays.fill(grid[i], " ");
-        }
+            for (int i = 0; i < rows; i++) {
+                Arrays.fill(grid[i], " ");
+            }
 
-        for (DayOfWeek day : DayOfWeek.values()) {
-            for (SchedulePeriod period : schedule.get(day)) {
-                int dayIndex = day.getValue() - 1;
-                int startSlot = (period.getStart().getHour() - startHour.getHour()) * 2 +
-                        (period.getStart().getMinute() / 30);
-                int endSlot = (period.getEnd().getHour() - startHour.getHour()) * 2 +
-                        (period.getEnd().getMinute() / 30);
-                for (int i = startSlot; i < endSlot; i++) {
-                    grid[i][dayIndex] = period.course.getAbbreviatedName();
+            for (DayOfWeek day : DayOfWeek.values()) {
+                for (SchedulePeriod period : schedule.get(day)) {
+                    int dayIndex = day.getValue() - 1;
+                    int startSlot = (period.getStart().getHour() - startHour.getHour()) * 2 +
+                            (period.getStart().getMinute() / 30);
+                    int endSlot = (period.getEnd().getHour() - startHour.getHour()) * 2 +
+                            (period.getEnd().getMinute() / 30);
+                    for (int i = startSlot; i < endSlot; i++) {
+                        grid[i][dayIndex] = period.course.getAbbreviatedName();
+                    }
                 }
             }
-        }
 
-        System.out.println("╔═══════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╗");
-        System.out.println("║ " + String.format("%02d", getTotalCredits()) + " cr ║   Mon   ║   Tue   ║   Wed   ║   " +
-                "Thu   ║   Fri   ║   Sat   ║   Sun   ║");
-        System.out.println("╠═══════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╣");
-        for (int i = 0; i < rows; i++) {
-            String time = String.format("║ %02d:%02d", startHour.getHour() + (i / 2), (i % 2) * 30);
-            System.out.print(time + " ║ ");
-            for (int j = 0; j < 7; j++) {
-                System.out.print(grid[i][j].length() > 1 ? grid[i][j] + " ║ " : "        ║ ");
+            System.out.println("╔═══════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╗");
+            System.out.println("║ " + String.format("%02d", getTotalCredits()) + " cr ║   Mon   ║   Tue   ║   Wed   ║   " +
+                    "Thu   ║   Fri   ║   Sat   ║   Sun   ║");
+            System.out.println("╠═══════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╣");
+            for (int i = 0; i < rows; i++) {
+                String time = String.format("║ %02d:%02d", startHour.getHour() + (i / 2), (i % 2) * 30);
+                System.out.print(time + " ║ ");
+                for (int j = 0; j < 7; j++) {
+                    System.out.print(grid[i][j].length() > 1 ? grid[i][j] + " ║ " : "        ║ ");
+                }
+                System.out.println();
             }
-            System.out.println();
-        }
-        
-        System.out.println("╠═══════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╣");
 
-        for (Exam exam : getExams()) {
-            System.out.println("║ " + exam + "\t\t\t\t\t\t      ║");
+            System.out.println("╠═══════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╣");
+
+            for (Exam exam : getExams()) {
+                System.out.println("║ " + exam + "\t\t\t\t\t\t      ║");
+            }
+
+            System.out.println("╚═════════════════════════════════════════════════════════════════════════════╝");
         }
-        
-        System.out.println("╚═════════════════════════════════════════════════════════════════════════════╝");
     }
 
     public int getTotalCredits() {

@@ -206,7 +206,6 @@ public class Cours {
             if (fini.compareTo("non") != 0) {
                 finish = false;
             }
-
         }
     }
 }

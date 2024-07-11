@@ -163,8 +163,8 @@ public class Schedule {
     }
 
 
-    public static Schedule genarateBestSchedule(ArrayList<Course> availableCourses, String sessionName, int creditMin,
-                                                int creditMax) {
+    public static Schedule genarateBestSchedule(ArrayList<Course> availableCourses, int creditMin,
+                                                int creditMax, String sessionName) {
         ArrayList<Schedule> results = new ArrayList<>();
         Schedule bestSchedule = new Schedule();
         int bestScore = 0;

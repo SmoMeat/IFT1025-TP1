@@ -40,7 +40,5 @@ public class Main {
         schedule.printScheduleGrid();
 
         System.out.println(schedule.order(DayOfWeek.FRIDAY));
-
-
     }
 }

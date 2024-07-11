@@ -17,8 +17,8 @@ public class Exam extends Period {
         this.date = date;
     }
 
-    @Override
-    public String toString() {
-        return "Examen " + getType() + " le " + getDate() + " de " + getStart() + " à " + getEnd();
-    }
+    // @Override
+    // public String toString() {
+    //     return "Examen " + getType() + " le " + getDate() + " de " + getStart() + " à " + getEnd();
+    // }
 }

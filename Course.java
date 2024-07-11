@@ -26,6 +26,14 @@ public class Course {
         this.credit = credit;
     }
 
+    public Course(String subject, int value, String name, String description, int credit) {
+        this.subject = subject;
+        this.value = value;
+        this.name = name;
+        this.description = description;
+        this.credit = credit;
+    }
+
     public Course(String subject, int value, int credit, ArrayList<Course> prerequisites) {
         this.value = value;
         this.subject = subject;
@@ -203,9 +211,35 @@ public class Course {
         return null;
     }
 
+    public String getSemestersAsString() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 0; i < semesters.size(); i++) {
+            stringBuilder.append(semesters.get(i).getName());
+            if (i < semesters.size() - 1) {
+                stringBuilder.append(", ");
+            }
+        }
+
+        return stringBuilder.toString();
+    }
+
     public void addSemester(Semester semester) {
         this.semesters.add(semester);
     }
+
+    public void removeSemester(Semester semester) {
+        this.semesters.remove(semester);
+    }
+
+    public void addSemesters(ArrayList<Semester> semesters) {
+        this.semesters.addAll(semesters);
+    }
+
+    // pas utilisé !!!
+    // public void removeSemesters(ArrayList<Semester> semesters) {
+    //     this.semesters.removeAll(semesters);
+    // }
 
     public ArrayList<Course> getPrerequisites() {
         return this.prerequisites;

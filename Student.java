@@ -42,8 +42,8 @@ public class Student {
         this.schedule = schedule;
     }
 
-    public String getSchedule() {
-        return schedule.toString();
+    public Schedule getSchedule() {
+        return schedule;
     }
 
     /**

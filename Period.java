@@ -61,7 +61,7 @@ public class Period {
     public String toString() {
         String result = "";
         String jours = "Dimanche";
-        result += this.type + " - ";
+        result += this.type + ": ";
 
         switch (this.dayOfWeek) {
             case DayOfWeek.MONDAY:
@@ -83,7 +83,7 @@ public class Period {
                 jours = "Samedi";
                 break;
         }
-        result += jours + " De " + this.start.toString() + " à " + this.end.toString();
+        result += jours + " de " + this.start.toString() + " à " + this.end.toString();
         return result;
     }
 

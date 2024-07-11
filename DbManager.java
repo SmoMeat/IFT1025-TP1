@@ -85,7 +85,6 @@ public class DbManager {
     
     public void addSemester(Semester semester, int courseId) {
         try {
-            System.out.println("ok");
             String sqlQuery = String.format("INSERT INTO semesters (semester_name, start_date, end_date, course_id) VALUES ('%s', '%s', '%s', %d)",
                                             semester.getName(), semester.getStart(), semester.getEnd(), courseId);
             statement.executeUpdate(sqlQuery);
@@ -130,7 +129,7 @@ public class DbManager {
         ArrayList<Course> courses = new ArrayList<>();
 
         try {
-            String sqlQuery = String.format("SELECT * FROM courses JOIN semesters ON courses.course_id = semesters.course_id JOIN periods ON semesters.semester_id = periods.semester_id JOIN exams ON semesters.semester_id = exams.semester_id");
+            String sqlQuery = String.format("SELECT * FROM courses LEFT JOIN semesters ON courses.course_id = semesters.course_id LEFT JOIN periods ON semesters.semester_id = periods.semester_id LEFT JOIN exams ON semesters.semester_id = exams.semester_id");
             ResultSet rs = statement.executeQuery(sqlQuery);
 
             Course currentCourse = new Course();
@@ -142,6 +141,8 @@ public class DbManager {
                 int semesterId = rs.getInt("semester_id");
                 int periodId = rs.getInt("period_id");
                 int examId = rs.getInt("exam_id");
+
+                // System.out.println("cours=" + courseId + " semester=" + semesterId + " period=" + periodId + " exam=" + examId);
 
                 if (previousCourseId != courseId) {
                     currentCourse = new Course(rs.getString("subject"), rs.getInt("value"), rs.getInt("credit"));

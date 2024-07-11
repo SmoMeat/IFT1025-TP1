@@ -17,11 +17,16 @@ public class Schedule {
         }
     }
 
-    private Map<DayOfWeek, List<SchedulePeriod>> schedule;
+    private Map<DayOfWeek, List<SchedulePeriod>> schedule ;
     private String semesterName;
     private int totalCredits;
 
-    public Schedule() {}
+    public Schedule() {
+        schedule = new HashMap<>();
+        for (DayOfWeek day : DayOfWeek.values()) {
+            schedule.put(day, new ArrayList<>());
+        }
+    }
 
     public Schedule(String semesterName) {
         schedule = new HashMap<>();
@@ -352,6 +357,8 @@ public class Schedule {
             }
 
             System.out.println("╚═════════════════════════════════════════════════════════════════════════════╝");
+        } else {
+            System.out.println("Aucun horaire");
         }
     }
 

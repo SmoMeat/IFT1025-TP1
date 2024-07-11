@@ -14,7 +14,6 @@ public class App {
     static ArrayList<Student> students = new ArrayList<>();
 
     public static void main(String[] args) {
-        System.out.println("test");
         System.err.println("\t*-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-*");
         System.out.println("\t\tBienvenue sur le planificateur académique");
         System.out.println("<!> " + courses.size() + " cours et " + students.size() + " étudiants ont été récupérés dans la base de données <!>");
@@ -506,6 +505,11 @@ public class App {
             System.out.println("Aucun cours " + userInput + " n'a été trouvé, essayez à nouveau ");
     }
 
+    /**
+     * C'est le menu de la gestion des cours
+     * 
+     * @return String - Le format du menu
+     */
     public static String getGestionCoursMessage() {
         return "Entrez: (1) pour voir tous les cours enregistrés"
                 + "\n\t(2) pour regarder les caractéristiques d'un cours"
@@ -515,6 +519,11 @@ public class App {
                 + "\n\t(back) pour revenir au menu principal";
     }
 
+    /**
+     * C'est le menu de la gestion des étudiants
+     * 
+     * @return String - Le format du menu
+     */
     public static String getGestionEtudiantMessage() {
         return "Entrez: (1) pour afficher tous les étudiants"
                 + "\n\t(2) pour ajouter un étudiant"
@@ -527,6 +536,11 @@ public class App {
                 + "\n\t(back) pour revenir au menu principal";
     }
 
+    /**
+     * C'est le menu de la gestion des modification sur un étudiant
+     * 
+     * @return String - Le format du menu
+     */
     public static String getModifyStudentMessage(Student student) {
         return "Vous voulez modifier l'étudiant: " + student
                 + "\nEntrez: (1) pour modifer son prénom"
@@ -535,15 +549,27 @@ public class App {
                 + "\n\t(back) pour revenir au gestionnaire d'étudiant";
     }
 
+    /**
+     * C'est le menu de la gestion de la génération des horaires
+     * 
+     * @return String - Le format du menu
+     */
     public static String getScheduleType() {
         return "Entrez: (1) pour obtenir toutes les horaires possibles"
                 + "\n\t(2) pour obtenir toutes les horaires sans conflit"
-                + "\n\t(3) pour obtenir le meilleur horaire";
+                + "\n\t(3) pour obtenir le meilleur horaire"
+                + "\n\t(back) pour revenir au gestionnaire d'étudiant";
     }
 
+    /**
+     * C'est la fonction qui gère les entrées de l'utilisateur face au menu de la gestion des étudiants
+     */
     public static void askGestionEtudiants() {
+        // On affiche le menu
         System.out.println(getGestionEtudiantMessage());
+        //Tant que l'utlisateur n'entre pas "back"
         while (!(userInput = scanner.nextLine()).equalsIgnoreCase("back")) {
+            // On vérifie l'entrée
             switch (userInput) {
                 case "1":
                     for (Student student : students)
@@ -578,10 +604,14 @@ public class App {
                     break;
 
             }
+            // On réaffiche le menu de gestion des étudiants
             System.out.println(getGestionEtudiantMessage());
         }
     }
 
+    /**
+     * Cette méthode gère l'ajout d'un étudiant
+     */
     public static void askAddStudent() {
         System.out.println("Quel est le prénom de l'étudiant");
         String firstname = scanner.nextLine();
@@ -596,6 +626,14 @@ public class App {
         students.add(nouvelEtudiant);
     }
 
+    /**
+     * Cette fonction est un algorithme qui demande le matricule d'un étudiant et vérifie s'il correspond
+     * au matricule d'une des étudiants de l'attribut "students". Si c'est le cas, on retourne l'étudiant.
+     * Sinon, on offre la possibilité à l'utilisateur de soit réessayer en tappant "oui" ou bien abandonné
+     * en tappant n'importe quoi d'autre. Si aucun étudiant n'est finalement choisi, on retourne null.
+     * 
+     * @return Student - Retourne l'étudiant choisi ou null si aucun n'est finalement choisi
+     */
     public static Student validateStudent() {
         boolean vu = false;
         Student etudiantActif = null;
@@ -612,6 +650,7 @@ public class App {
                 if (student.getMatricule().equals(matricule)) {
                     etudiantActif = student;
                     vu = true;
+                    break;
                 }
             }
             if (!vu) {
@@ -625,37 +664,50 @@ public class App {
         return etudiantActif;
     }
 
+    /**
+     * Cette méthode gère la modification d'un étudiant grâce à un menu qui propose à l'utilisateur ce qu'il
+     * veut choisir de modifier (Prénom, nom ou matricule). Il a aussi l'option de revenir en arrière.
+     */
     public static void askModifyStudent() {
+        // On demande à l'utilisateur de choisir l'étudiant à modifier
         Student etudiantActif = validateStudent();
 
+        // Si l'étudiant existe...
         if (etudiantActif != null) {
+            // On affiche le menu de modification d'un étudiant
             System.out.println(getModifyStudentMessage(etudiantActif));
+            // Tant qu'on n'entre pas "back"
             while (!(userInput = scanner.nextLine()).equalsIgnoreCase("back")) {
                 switch (userInput) {
+                    // On modifie le prénom
                     case "1":
                         System.out.println("Quel est son nouveau prénom?");
                         String firstname = scanner.nextLine();
                         etudiantActif.setFirstname(firstname);
                         break;
-
+                    // On modifie le nom de famille
                     case "2":
                         System.out.println("Quel est son nouveau nom de famille?");
                         String lastname = scanner.nextLine();
                         etudiantActif.setLastname(lastname);
                         break;
-
+                    // On modifie le matricule
                     case "3":
                         System.out.println("Quel est son nouveau matricule?");
                         String matricule = scanner.nextLine();
                         etudiantActif.setMatricule(matricule);
                         break;
                 }
+                // On demande la prochaine modification
                 System.out.println("Quoi d'autre?");
                 System.out.println(getModifyStudentMessage(etudiantActif));
             }
         }
     }
 
+    /**
+     * Cette méthode gère la suppression d'un étudiant.
+     */
     public static void askDeleteStudent() {
         boolean vu = false;
         int index = -1;
@@ -676,27 +728,26 @@ public class App {
         }
     }
 
+    /**
+     * Cette méthode gère l'affichage de l'horaire d'un étudiant
+     */
     public static void askSeeSchedule() {
-        boolean vu = false;
-        System.out.println("Quel est le matricule de l'étudiant dont vous voulez voir l'horaire?");
-        String matricule = scanner.nextLine();
+        Student student = validateStudent();
 
-        for (Student student : students) {
-            if (student.getMatricule().equals(matricule)) {
-                student.getSchedule().printScheduleGrid();
-                vu = true;
-            }
-        }
-        if (!vu)
-            System.out.println("Matricule non-trouvée");
-
+        if (student != null) {
+            student.getSchedule().printScheduleGrid();
+        } 
     }
 
+    /**
+     * Cette méthode gère l'ajout de cours à un horaire d'étudiant
+     */
     public static void askAddSchedule() {
         Student etudiantActif = validateStudent();
         Course coursActif = null;
 
         try {
+            // Si l'étudiant est "null", ça plante.
             Schedule schedule = etudiantActif.getSchedule();
 
 
@@ -708,19 +759,25 @@ public class App {
                     coursActif = course;
 
             }
-            System.out.println("Entrez le nom de la session (ex: A24)");
-            String sessionName = scanner.nextLine();
 
-            schedule.addCourse(coursActif, sessionName);
+            if (coursActif == null) {
+                System.out.println("Le cours n'existe pas");
+            } else {
 
-            if (etudiantActif.getSchedule().hasConflict()) {
-                System.out.println("Il y a un conflit d'horaire! Voulez vous toujours ajouter le cours?\n " +
-                        "Entrez: (oui) Pour l'ajouter quand même"
-                        + "\n\t (N'importe quoi) pour ne pas l'ajouter");
-                String answer = scanner.nextLine();
+                System.out.println("Entrez le nom de la session (ex: A24)");
+                String sessionName = scanner.nextLine();
 
-                if (!answer.equalsIgnoreCase("oui"))
-                    schedule.removeClass(coursActif, sessionName);
+                schedule.addCourse(coursActif, sessionName);
+
+                if (etudiantActif.getSchedule().hasConflict()) {
+                    System.out.println("Il y a un conflit d'horaire! Voulez vous toujours ajouter le cours?\n " +
+                            "Entrez: (oui) Pour l'ajouter quand même"
+                            + "\n\t (N'importe quoi) pour ne pas l'ajouter");
+                    String answer = scanner.nextLine();
+
+                    if (!answer.equalsIgnoreCase("oui"))
+                        schedule.removeClass(coursActif, sessionName);
+                }
             }
         } catch (Exception e) {
             System.out.println("Les informations sont érronées! Aucun cours n'a été ajouté");
@@ -780,19 +837,24 @@ public class App {
                 "\n\t (stop) pour finir");
         String SCours;
         List<Schedule> result;
+        boolean vu = false;
 
         while (!(SCours = scanner.nextLine()).equalsIgnoreCase("stop")) {
 
-            if (SCours.equalsIgnoreCase("All"))
+            if (!SCours.equalsIgnoreCase("All"))
                 return courses;
 
             for (Course course : courses) {
                 if (course.getAbbreviatedName().equalsIgnoreCase(SCours)) {
                     coursCandidats.add(course);
+                    vu = true;
                     break;
+                } 
+                if (!vu) {
+                    System.out.println("Le cours n'existe pas");
                 }
-                System.out.println("Quels sont les cours candidats? Entrer le nom; (stop) pour finir");
             }
+            System.out.println("Quels sont les autres? cours candidats? Entrer le nom; (stop) pour finir");
         }
         return coursCandidats;
     }

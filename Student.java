@@ -7,6 +7,8 @@ public class Student {
     private String matricule;
     private Schedule schedule = new Schedule();
 
+    public Student() {}
+
     /**
      * Construit un nouvel étudiant
      * 

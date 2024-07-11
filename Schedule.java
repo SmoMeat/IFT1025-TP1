@@ -8,20 +8,15 @@ import java.util.List;
 import java.util.Map;
 
 public class Schedule {
-    public class SchedulePeriod extends Period {
-        public Course course;
+    private Map<DayOfWeek, List<SchedulePeriod>> schedule;
+    private String semesterName = "A00";
 
-        SchedulePeriod(Course course, Period period) {
-            super(period);
-            this.course = course;
+    public Schedule() {
+        schedule = new HashMap<>();
+        for (DayOfWeek day : DayOfWeek.values()) {
+            schedule.put(day, new ArrayList<>());
         }
     }
-
-    private Map<DayOfWeek, List<SchedulePeriod>> schedule;
-    private String semesterName;
-    private int totalCredits;
-
-    public Schedule() {}
 
     public Schedule(String semesterName) {
         schedule = new HashMap<>();
@@ -38,7 +33,6 @@ public class Schedule {
                 schedule.get(day).add(period);
             }
         }
-        this.totalCredits = other.totalCredits;
     }
 
     public Schedule(List<Course> courses, String semesterName) {
@@ -54,7 +48,6 @@ public class Schedule {
         course.getSemesterByName(sessionName).getPeriods().forEach(period -> {
             schedule.get(period.getDayOfWeek()).add(new SchedulePeriod(course, period));
         });
-        totalCredits += course.getCredit();
     }
 
     public void addManyClasses(List<Course> courses, String sessionName) {
@@ -67,7 +60,6 @@ public class Schedule {
         course.getSemesterByName(sessionName).getPeriods().forEach(period -> {
             schedule.get(period.getDayOfWeek()).remove(period);
         });
-        totalCredits -= course.getCredit();
     }
 
     public List<SchedulePeriod> getClassesForSpecifDay(DayOfWeek day) {
@@ -104,8 +96,17 @@ public class Schedule {
         return result;
     }
 
+    public void addSchedulePeriod(SchedulePeriod schedulePeriod) {
+        schedule.get(schedulePeriod.getDayOfWeek()).add(schedulePeriod);
+    }
+
+
     public String getSemesterName() {
         return this.semesterName;
+    }
+
+    public void setSemesterName(String semesterName) {
+        this.semesterName = semesterName;
     }
 
     public ArrayList<SchedulePeriod> getSchedulePeriods() {
@@ -135,7 +136,12 @@ public class Schedule {
 
     public ArrayList<Exam> getExams() {
         ArrayList<Exam> exams = new ArrayList<>();
-        getCourses().forEach(course -> exams.addAll(course.getSemesterByName(semesterName).getExams()));
+        for (Course course : getCourses()) {
+            ArrayList<Exam> courseExams = course.getSemesterByName(semesterName).getExams();
+            System.err.println("sfsff");
+            System.out.println(courseExams.size());
+        }
+        // getCourses().forEach(course -> exams.addAll(course.getSemesterByName(semesterName).getExams()));
         return exams;
     }
 
@@ -351,10 +357,15 @@ public class Schedule {
         }
         
         System.out.println("╚═════════════════════════════════════════════════════════════════════════════╝");
-
     }
 
     public int getTotalCredits() {
-        return this.totalCredits;
+        int totalCredits = 0;
+
+        for (Course course : getCourses()) {
+            totalCredits += course.getCredit();
+        }
+
+        return totalCredits;
     }
 }

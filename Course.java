@@ -143,4 +143,27 @@ public class Course {
     public ArrayList<Course> getPrerequisites() {
         return this.prerequisites;
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        return equals((Course) o);
+    }
+    
+    public boolean equals(Course other) {
+        if (!subject.equals(other.getSubject()))
+            return false;
+        if (value != other.getValue())
+            return false;        
+        if (!name.equals(other.getName()))
+            return false;
+        if (!description.equals(other.getDescription()))
+            return false;
+        if (credit != other.getCredit())
+            return false;
+        if (!semesters.equals(other.getSemesters()))
+            return false;
+
+        return true;
+    }
 }

@@ -9,9 +9,9 @@ import java.util.Scanner;
 public class App {
     static DbManager dbManager = new DbManager();
     static ArrayList<Course> courses = dbManager.getAllCourses();
+    static ArrayList<Student> students = dbManager.getAllStudents();
     static Scanner scanner = new Scanner(System.in);
     static String userInput;
-    static ArrayList<Student> students = new ArrayList<>();
 
     public static void main(String[] args) {
         System.err.println("\t*-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-*");

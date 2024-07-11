@@ -129,14 +129,22 @@ public class DbManager {
         ArrayList<Course> courses = new ArrayList<>();
 
         try {
-            String sqlQuery = String.format("SELECT * FROM courses LEFT JOIN semesters ON courses.course_id = semesters.course_id LEFT JOIN periods ON semesters.semester_id = periods.semester_id LEFT JOIN exams ON semesters.semester_id = exams.semester_id");
+            //String sqlQuery = String.format("SELECT * FROM courses LEFT JOIN semesters ON courses.course_id = semesters.course_id LEFT JOIN periods ON semesters.semester_id = periods.semester_id LEFT JOIN exams ON semesters.semester_id = exams.semester_id");
+            String sqlQuery = String.format("SELECT courses.course_id, courses.subject, courses.value, courses.course_name, courses.description, courses.credit, semesters.semester_id, semesters.semester_name, semesters.start_date, semesters.end_date, periods.period_id, periods.start_time AS period_start, periods.end_time AS period_end, periods.day_of_week AS period_day, periods.type AS period_type, periods.section AS period_section, exams.exam_id, exams.start_time AS exam_start, exams.end_time AS exam_end, exams.day_of_week AS exams_day, exams.type AS exam_type, exams.section AS exam_section, exams.date AS exam_date FROM courses LEFT JOIN semesters ON courses.course_id = semesters.course_id LEFT JOIN periods ON semesters.semester_id = periods.semester_id LEFT JOIN exams ON semesters.semester_id = exams.semester_id");
+            
             ResultSet rs = statement.executeQuery(sqlQuery);
 
             Course currentCourse = new Course();
-            int previousCourseId = -1; int previousSemesterId = -1; int previousPeriodId = -1; int previousExamId = -1;
+            // int previousCourseId = -1; int previousSemesterId = -1; int previousPeriodId = -1; int previousExamId = -1;
             String currentSemesterName = ""; 
 
+            ArrayList<Integer> courseIds = new ArrayList<>();
+            ArrayList<Integer> semesterIds = new ArrayList<>();
+            ArrayList<Integer> periodIds = new ArrayList<>();
+            ArrayList<Integer> examIds = new ArrayList<>();
+
             while (rs.next()) {
+
                 int courseId = rs.getInt("course_id");
                 int semesterId = rs.getInt("semester_id");
                 int periodId = rs.getInt("period_id");
@@ -144,29 +152,27 @@ public class DbManager {
 
                 // System.out.println("cours=" + courseId + " semester=" + semesterId + " period=" + periodId + " exam=" + examId);
 
-                if (previousCourseId != courseId) {
+                if (!courseIds.contains(courseId)) {
                     currentCourse = new Course(rs.getString("subject"), rs.getInt("value"), rs.getInt("credit"));
                     courses.add(currentCourse);
+                    courseIds.add(courseId);
                 }
 
-                if (previousSemesterId != semesterId) {
+                if (!semesterIds.contains(semesterId)) {
                     currentSemesterName = rs.getString("semester_name");
                     currentCourse.addSemester(new Semester(currentSemesterName, LocalDate.parse(rs.getString("start_date")), LocalDate.parse(rs.getString("end_date"))));
+                    semesterIds.add(semesterId);
                 }
 
-                if (previousPeriodId != periodId) {
-                    currentCourse.getSemesterByName(currentSemesterName).addPeriod(new Period(LocalTime.parse(rs.getString("start_time")), LocalTime.parse(rs.getString("end_time")), DayOfWeek.valueOf(rs.getString("day_of_week")), ClassType.valueOf(rs.getString("type")), rs.getString("section")));
+                if (!periodIds.contains(periodId)) {
+                    currentCourse.getSemesterByName(currentSemesterName).addPeriod(new Period(LocalTime.parse(rs.getString("period_start")), LocalTime.parse(rs.getString("period_end")), DayOfWeek.valueOf(rs.getString("period_day")), ClassType.valueOf(rs.getString("period_type")), rs.getString("period_section")));
+                    periodIds.add(periodId);
                 }
 
-                if (previousExamId != examId) {
-                    currentCourse.getSemesterByName(currentSemesterName).addExam(new Exam(LocalDate.parse(rs.getString("date")), LocalTime.parse(rs.getString("start_time")), LocalTime.parse(rs.getString("end_time")), ClassType.valueOf(rs.getString("type")), rs.getString("section")));
+                if (!examIds.contains(examId)) {
+                    currentCourse.getSemesterByName(currentSemesterName).addExam(new Exam(LocalDate.parse(rs.getString("exam_date")), LocalTime.parse(rs.getString("exam_start")), LocalTime.parse(rs.getString("exam_end")), ClassType.valueOf(rs.getString("exam_type")), rs.getString("exam_section")));
+                    examIds.add(examId);
                 }
-
-
-                previousCourseId = courseId;
-                previousSemesterId = semesterId;
-                previousPeriodId = periodId;
-                previousExamId = examId;
             }
 
             
@@ -178,48 +184,48 @@ public class DbManager {
     }
 
 
-    public void getCourseByCode(String subject, int value) {
-        try {
-            String sqlQuery = String.format("SELECT * FROM courses JOIN semesters ON courses.course_id = semesters.course_id JOIN periods ON semesters.semester_id = periods.semester_id JOIN exams ON semesters.semester_id = exams.semester_id WHERE courses.subject='%s' AND courses.value='%s'", subject, value);
-            ResultSet rs = statement.executeQuery(sqlQuery);
+    // public void getCourseByCode(String subject, int value) {
+    //     try {
+    //         String sqlQuery = String.format("SELECT * FROM courses JOIN semesters ON courses.course_id = semesters.course_id JOIN periods ON semesters.semester_id = periods.semester_id JOIN exams ON semesters.semester_id = exams.semester_id WHERE courses.subject='%s' AND courses.value='%s'", subject, value);
+    //         ResultSet rs = statement.executeQuery(sqlQuery);
             
 
-            System.out.println(rs.getString("subject") + " " + rs.getString("value") + " " + rs.getString("course_name") + " " + rs.getString("description") + " " + rs.getInt("credit"));
-            System.out.println(rs.getString("semester_id") + " " + rs.getString("semester_name") + " " + rs.getString("start_date"));
+    //         System.out.println(rs.getString("subject") + " " + rs.getString("value") + " " + rs.getString("course_name") + " " + rs.getString("description") + " " + rs.getInt("credit"));
+    //         System.out.println(rs.getString("semester_id") + " " + rs.getString("semester_name") + " " + rs.getString("start_date"));
 
-            Course course = new Course(rs.getString("subject"), rs.getInt("value"), rs.getInt("credit"));
+    //         Course course = new Course(rs.getString("subject"), rs.getInt("value"), rs.getInt("credit"));
 
-            int previousSemesterId = -1; int previousPeriodId = -1; int previousExamId = -1;
-            String currentSemesterName = ""; 
+    //         int previousSemesterId = -1; int previousPeriodId = -1; int previousExamId = -1;
+    //         String currentSemesterName = ""; 
 
-            while (rs.next()) {
-                int semesterId = rs.getInt("semester_id");
-                int periodId = rs.getInt("period_id");
-                int examId = rs.getInt("exam_id");
+    //         while (rs.next()) {
+    //             int semesterId = rs.getInt("semester_id");
+    //             int periodId = rs.getInt("period_id");
+    //             int examId = rs.getInt("exam_id");
 
-                if (previousSemesterId != semesterId) {
-                    currentSemesterName = rs.getString("semester_name");
-                    course.addSemester(new Semester(currentSemesterName, LocalDate.parse(rs.getString("start_date")), LocalDate.parse(rs.getString("end_date"))));
-                }
+    //             if (previousSemesterId != semesterId) {
+    //                 currentSemesterName = rs.getString("semester_name");
+    //                 course.addSemester(new Semester(currentSemesterName, LocalDate.parse(rs.getString("start_date")), LocalDate.parse(rs.getString("end_date"))));
+    //             }
 
-                if (previousPeriodId != periodId) {
-                    course.getSemesterByName(currentSemesterName).addPeriod(new Period(LocalTime.parse(rs.getString("start_time")), LocalTime.parse(rs.getString("end_time")), DayOfWeek.valueOf(rs.getString("day_of_week")), ClassType.valueOf(rs.getString("type")), rs.getString("section")));
-                }
+    //             if (previousPeriodId != periodId) {
+    //                 course.getSemesterByName(currentSemesterName).addPeriod(new Period(LocalTime.parse(rs.getString("start_time")), LocalTime.parse(rs.getString("end_time")), DayOfWeek.valueOf(rs.getString("day_of_week")), ClassType.valueOf(rs.getString("type")), rs.getString("section")));
+    //             }
 
-                if (previousExamId != examId) {
-                    course.getSemesterByName(currentSemesterName).addExam(new Exam(LocalDate.parse(rs.getString("date")), LocalTime.parse(rs.getString("start_time")), LocalTime.parse(rs.getString("end_time")), ClassType.valueOf(rs.getString("type")), rs.getString("section")));
-                }
+    //             if (previousExamId != examId) {
+    //                 course.getSemesterByName(currentSemesterName).addExam(new Exam(LocalDate.parse(rs.getString("date")), LocalTime.parse(rs.getString("start_time")), LocalTime.parse(rs.getString("end_time")), ClassType.valueOf(rs.getString("type")), rs.getString("section")));
+    //             }
 
 
 
-                previousSemesterId = semesterId;
-                previousPeriodId = periodId;
-                previousExamId = examId;
-            }
+    //             previousSemesterId = semesterId;
+    //             previousPeriodId = periodId;
+    //             previousExamId = examId;
+    //         }
 
-            System.out.println(course.getSemesterByName("A24"));
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-        }
-    }
+    //         System.out.println(course.getSemesterByName("A24"));
+    //     } catch (Exception e) {
+    //         e.printStackTrace(System.err);
+    //     }
+    // }
 }

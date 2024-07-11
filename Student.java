@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Student {
@@ -7,7 +6,6 @@ public class Student {
     private String lastname;
     private String matricule;
     private Schedule schedule = new Schedule();
-    private ArrayList<Course> takenCourses = new ArrayList<>();
 
     /**
      * Construit un nouvel étudiant
@@ -28,11 +26,7 @@ public class Student {
     }
 
     public void generateBestSchedule(ArrayList<Course> availableCourses, String semesterName) {
-        availableCourses.removeAll(takenCourses);
-        // retirer les cours sans préalables
         for (Course course : availableCourses) {
-            if (takenCourses.containsAll(course.getPrerequisites()))
-                continue;
             availableCourses.remove(course);
         }
         List<Schedule> schedules =  Schedule.genarateSuitableSchedules(availableCourses, 14, 16, semesterName);

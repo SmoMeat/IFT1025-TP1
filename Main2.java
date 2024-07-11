@@ -11,15 +11,13 @@ public class Main2 {
 
         CourseList courseList = new CourseList();
 
-        List<Schedule> schedules = Schedule.genarateSuitableSchedules(courseList.mathInfoCourses, 13, 18, "A24");
+        // List<Schedule> schedules = Schedule.genarateSuitableSchedules(courseList.mathInfoCourses, 3, 18, "A24");
 
-        for (Schedule schedule : schedules) {
-            schedule.printScheduleGrid();
-        }
+        // for (Schedule schedule : schedules) {
+        //     schedule.printScheduleGrid();
+        // }
 
-        Schedule.genarateBestSchedule(courseList.mathInfoCourses,"A24", 14,16).printScheduleGrid();
-
-        System.out.println(schedules.get(0));
+        Schedule.genarateBestSchedule(courseList.mathInfoCourses, 3, 16, "A24").printScheduleGrid();
 
     }
 }

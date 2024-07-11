@@ -39,13 +39,13 @@ public class CourseList {
             new Period(LocalTime.of(8,30), LocalTime.of(9,30), DayOfWeek.FRIDAY, ClassType.TH, "A"),
             new Period(LocalTime.of(10,30), LocalTime.of(12,30), DayOfWeek.MONDAY, ClassType.TH, "A"),
             new Period(LocalTime.of(9,30), LocalTime.of(11,30), DayOfWeek.MONDAY, ClassType.TP, "A101")
-        )), new ArrayList<Exam>(Arrays.asList(new Exam(LocalDate.of(2024,5,23), LocalTime.of(8,30), LocalTime.of(11,30), ClassType.FINAL, "A")))));
+        )), new ArrayList<Exam>(Arrays.asList(new Exam(LocalDate.of(2024,5,23), LocalTime.of(12,30), LocalTime.of(14,30), ClassType.FINAL, "A")))));
 
         IFT2125.addSemester(new Semester("A24", start, end, new ArrayList<Period>(Arrays.asList(
             new Period(LocalTime.of(8,30), LocalTime.of(9,30), DayOfWeek.THURSDAY, ClassType.TH, "A"),
             new Period(LocalTime.of(10,30), LocalTime.of(12,30), DayOfWeek.TUESDAY, ClassType.TH, "A"),
             new Period(LocalTime.of(9,30), LocalTime.of(11,30), DayOfWeek.THURSDAY, ClassType.TP, "A101")
-        )), new ArrayList<Exam>(Arrays.asList(new Exam(LocalDate.of(2024,5,23), LocalTime.of(8,30), LocalTime.of(11,30), ClassType.FINAL, "A")))));
+        )), new ArrayList<Exam>(Arrays.asList(new Exam(LocalDate.of(2024,5,24), LocalTime.of(8,30), LocalTime.of(11,30), ClassType.FINAL, "A")))));
 
         // MAT1000.addSemester(new Semester("A24", start, end, new ArrayList<Period>(Arrays.asList(
         //     new Period(LocalTime.of(15,30), LocalTime.of(17,30), DayOfWeek.TUESDAY, ClassType.TH),

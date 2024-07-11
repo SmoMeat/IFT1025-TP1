@@ -3,7 +3,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -32,17 +31,6 @@ public class App {
         }
 
         dbManager.addAllCourses(courses);
-
-        // voir tous les étudiants
-        // ajouter un étudiant
-        // modifier un étudiant
-        // supprimer un étudiant
-        // voir l'horaire d'un étudiant
-        // ajouter / supprimer un cours à un étudiant
-        // générer un horaire pour un étudiant (tous / le meilleur / ...)
-        //   -> à partir de tous les cours ou d'une sélection
-
-        //System.out.println(students);
     }
 
     public static void askCoursManager() {
@@ -541,7 +529,6 @@ public class App {
                 + "\nEntrez: (1) pour modifer son prénom"
                 + "\n\t(2) pour modifier son nom de famille"
                 + "\n\t(3) pour modifier son matricule"
-                + "\n\t(4) pour modifier ses cours réussis"
                 + "\n\t(back) pour revenir au gestionnaire d'étudiant";
     }
 
@@ -615,7 +602,7 @@ public class App {
             if (safe)
                 break;
 
-            System.out.println("Quel est le matricule de l'étudiant à modifier?");
+            System.out.println("Quel est le matricule de l'étudiant?");
             String matricule = scanner.nextLine();
 
             for (Student student : students) {
@@ -625,7 +612,7 @@ public class App {
                 }
             }
             if (!vu) {
-                System.out.println("Matricule non-trouvé. \nEntrez: (oui) Pour Réessayer \n\t (N'importe quoi) Pour sortir");
+                System.out.println("Matricule non-trouvé. \nEntrez:\t(oui) Pour Réessayer \n\t(N'importe quoi) Pour sortir");
                 String retry = scanner.nextLine();
                 if (!retry.equalsIgnoreCase("oui")) {
                     safe = true;
@@ -659,11 +646,6 @@ public class App {
                         String matricule = scanner.nextLine();
                         etudiantActif.setMatricule(matricule);
                         break;
-
-                    case "4":
-                        //À faire
-                        break;
-
                 }
                 System.out.println("Quoi d'autre?");
                 System.out.println(getModifyStudentMessage(etudiantActif));
@@ -784,7 +766,7 @@ public class App {
                     askBestSchedule(etudiantActif);
                     break;
             }
-            System.out.println(getGestionCoursMessage());
+            System.out.println(getScheduleType());
         }
     }
 
@@ -821,12 +803,13 @@ public class App {
 
         result = Schedule.generateAllPossibleSchedules(coursCandidats, sessionName);
 
-        for (Schedule schedule : result) {
-            schedule.printScheduleGrid();
+        for (int i=0; i<result.size(); i++) {
+            System.out.println("Horaire " + (i+1) + ": ");
+            result.get(i).printScheduleGrid();
         }
 
         System.out.println("Laquelle voulez-vous? (Entrer le numéro)");
-        int choice = scanner.nextInt();
+        int choice = askInt();
 
         student.setSchedule(result.get(choice + 1));
     }
@@ -836,10 +819,10 @@ public class App {
         List<Schedule> result;
 
         System.out.println("Quel est le nombre de crédits minimal pour la session?");
-        int creditMin = scanner.nextInt();
+        int creditMin = askInt();
 
         System.out.println("Quel est le nombre de crédits maximal pour la session?");
-        int creditMax = scanner.nextInt();
+        int creditMax = askInt();
 
         System.out.println("Quel est le nom de la session (ex: A24)");
         String sessionName = scanner.nextLine();
@@ -851,7 +834,7 @@ public class App {
         }
 
         System.out.println("Laquelle voulez-vous? (Entrer le numéro)");
-        int choice = scanner.nextInt();
+        int choice = askInt();
 
         student.setSchedule(result.get(choice + 1));
     }
@@ -861,10 +844,10 @@ public class App {
         Schedule result;
 
         System.out.println("Quel est le nombre de crédits minimal pour la session?");
-        int creditMin = scanner.nextInt();
+        int creditMin = askInt();
 
         System.out.println("Quel est le nombre de crédits maximal pour la session?");
-        int creditMax = scanner.nextInt();
+        int creditMax = askInt();
 
         System.out.println("Quel est le nom de la session (ex: A24)");
         String sessionName = scanner.nextLine();
@@ -875,4 +858,14 @@ public class App {
 
         student.setSchedule(result);
     }
+
+    public static int askInt() {
+        try {
+            return Integer.parseInt(scanner.nextLine());
+        } catch (Exception e) {
+            System.out.println("Entrez un nombre valide, réessayez!");
+            return askInt();
+        }
+    }
+    
 }

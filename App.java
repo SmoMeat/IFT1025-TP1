@@ -572,6 +572,7 @@ public class App {
 
                 case "7":
                     askDeleteSchedule();
+                    break;
 
                 case "8":
                     askGenerateSchedule();
@@ -604,7 +605,7 @@ public class App {
         while (!vu) {
             if (safe)
                 break;
-
+            
             System.out.println("Quel est le matricule de l'étudiant?");
             String matricule = scanner.nextLine();
 
@@ -720,7 +721,7 @@ public class App {
                 String answer = scanner.nextLine();
 
                 if (!answer.equalsIgnoreCase("oui"))
-                    schedule.removeClass(coursActif, sessionName);
+                    schedule.removeCourse(coursActif, sessionName);
             }
         } catch (Exception e) {
             System.out.println("Les informations sont érronées! Aucun cours n'a été ajouté");
@@ -746,7 +747,7 @@ public class App {
             System.out.println("Entrez le nom de la session (ex: A24)");
             String sessionName = scanner.nextLine();
 
-            schedule.removeClass(coursActif, sessionName);
+            schedule.removeCourse(coursActif, sessionName);
         } catch (Exception e) {
             System.out.println("Les informations sont érronées! Aucun cours n'a été supprimé");
         }

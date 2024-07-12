@@ -503,6 +503,8 @@ public class Schedule {
             }
 
             System.out.println("╚═════════════════════════════════════════════════════════════════════════════╝");
+        } else {
+            System.out.println("Aucun horaire");
         }
     }
 

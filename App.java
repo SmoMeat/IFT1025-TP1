@@ -8,8 +8,8 @@ import java.util.Scanner;
 
 public class App {
     static DbManager dbManager = new DbManager();
-    static ArrayList<Course> courses = dbManager.getAllCourses();
-    static ArrayList<Student> students = dbManager.getAllStudents();
+    static ArrayList<Course> courses = dbManager.getCourses();
+    static ArrayList<Student> students = dbManager.getStudents();
     static Scanner scanner = new Scanner(System.in);
     static String userInput;
 
@@ -39,6 +39,7 @@ public class App {
         }
 
         dbManager.saveToDB(courses, students);
+        dbManager.closeConnection();
     }
 
     public static void askCoursManager() {

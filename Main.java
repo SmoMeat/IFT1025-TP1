@@ -39,6 +39,6 @@ public class Main {
 
         schedule.printScheduleGrid();
 
-        System.out.println(schedule.order(DayOfWeek.FRIDAY));
+        System.out.println(schedule.orderPeriodsForSpecificDay(DayOfWeek.FRIDAY));
     }
 }

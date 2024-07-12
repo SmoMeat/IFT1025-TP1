@@ -85,7 +85,7 @@ public class Schedule {
     }
 
     /**
-     * Ajoute plusieurs cours à l'emploi du temps pour une session donnée.
+     * Retire un cours à l'emploi du temps pour une session donnée.
      *
      * @param courses     la liste des cours à ajouter
      * @param sessionName le nom de la session

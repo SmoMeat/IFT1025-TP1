@@ -538,7 +538,8 @@ public class App {
     public static String getScheduleType() {
         return "Entrez: (1) pour obtenir toutes les horaires possibles"
                 + "\n\t(2) pour obtenir toutes les horaires sans conflit"
-                + "\n\t(3) pour obtenir le meilleur horaire";
+                + "\n\t(3) pour obtenir le meilleur horaire"
+                + "\n\t(back) pour revenir au gestionnaire d'étudiant";
     }
 
     public static void askGestionEtudiants() {
@@ -572,6 +573,7 @@ public class App {
 
                 case "7":
                     askDeleteSchedule();
+                    break;
 
                 case "8":
                     askGenerateSchedule();
@@ -673,6 +675,7 @@ public class App {
             System.out.println("Matricule non-trouvée. Aucun étudiant n'a été supprimé!");
         } else {
             students.remove(index);
+            System.out.println("L'étudiant avec le matricule " + matricule + " a été supprimé!");
         }
     }
 
@@ -719,8 +722,14 @@ public class App {
                         + "\n\t (N'importe quoi) pour ne pas l'ajouter");
                 String answer = scanner.nextLine();
 
-                if (!answer.equalsIgnoreCase("oui"))
+                if (!answer.equalsIgnoreCase("oui")) {
                     schedule.removeClass(coursActif, sessionName);
+                    System.out.println("Le cours n'a pas été ajouté");
+                } else {
+                    System.out.println("Le cours a été ajouté avec succès");
+                }
+            } else {
+                System.out.println("Le cours a été ajouté avec succès");
             }
         } catch (Exception e) {
             System.out.println("Les informations sont érronées! Aucun cours n'a été ajouté");
@@ -737,7 +746,7 @@ public class App {
 
             System.out.println("Entrez le code du cours à supprimer (ex: IFT1015):");
             String SCours = scanner.nextLine();
-            // À FAIRE: Gérer mieux les erreurs
+            
             for (Course course : courses) {
                 if (course.getAbbreviatedName().equalsIgnoreCase(SCours))
                     coursActif = course;
@@ -747,6 +756,7 @@ public class App {
             String sessionName = scanner.nextLine();
 
             schedule.removeClass(coursActif, sessionName);
+            System.out.println("Le cours a été supprimé avec succès");
         } catch (Exception e) {
             System.out.println("Les informations sont érronées! Aucun cours n'a été supprimé");
         }
@@ -789,10 +799,11 @@ public class App {
             for (Course course : courses) {
                 if (course.getAbbreviatedName().equalsIgnoreCase(SCours)) {
                     coursCandidats.add(course);
+
                     break;
                 }
-                System.out.println("Quels sont les cours candidats? Entrer le nom; (stop) pour finir");
             }
+            System.out.println("Quels sont les autres cours candidats? Entrer le nom; (stop) pour finir et (ALL) pour tous les cours");
         }
         return coursCandidats;
     }
@@ -814,7 +825,7 @@ public class App {
         System.out.println("Laquelle voulez-vous? (Entrer le numéro)");
         int choice = askInt();
 
-        student.setSchedule(result.get(choice + 1));
+        student.setSchedule(result.get(choice - 1));
     }
 
     public static void askSuitableSchedule(Student student) {

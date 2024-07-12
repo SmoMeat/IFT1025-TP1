@@ -175,4 +175,13 @@ public class Course {
     public void addSemesters(ArrayList<Semester> semesters) {
         this.semesters.addAll(semesters);
     }
+
+    // pas utilisé !!!
+    // public void removeSemesters(ArrayList<Semester> semesters) {
+    //     this.semesters.removeAll(semesters);
+    // }
+
+    public ArrayList<Course> getPrerequisites() {
+        return this.prerequisites;
+    }
 }

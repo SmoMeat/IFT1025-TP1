@@ -143,19 +143,38 @@ public class Schedule {
         return result;
     }
 
+    /**
+     * Ajoute une période (SchedulePeriod) à l'horaire existant.
+     *
+     * @param schedulePeriod la période à ajouter à l'horaire
+     */
     public void addSchedulePeriod(SchedulePeriod schedulePeriod) {
         schedule.get(schedulePeriod.getDayOfWeek()).add(schedulePeriod);
     }
 
-
+    /**
+     * Retourne le nom du semestre.
+     *
+     * @return le nom du semestre
+     */
     public String getSemesterName() {
         return this.semesterName;
     }
 
+    /**
+     * Définit le nom du semestre.
+     *
+     * @param semesterName le nom du semestre à changer
+     */
     public void setSemesterName(String semesterName) {
         this.semesterName = semesterName;
     }
 
+    /**
+     * Retourne toutes les périodes de l'horaire.
+     *
+     * @return une liste de toutes les périodes de l'horaire
+     */
     public ArrayList<SchedulePeriod> getSchedulePeriods() {
         ArrayList<SchedulePeriod> schedulePeriods = new ArrayList<>();
 
@@ -168,6 +187,11 @@ public class Schedule {
         return schedulePeriods;
     }
 
+    /**
+     * Retourne tous les cours de l'horaire.
+     *
+     * @return une liste de tous les cours de l'horaire
+     */
     public ArrayList<Course> getCourses() {
         ArrayList<Course> courses = new ArrayList<>();
         
@@ -181,17 +205,22 @@ public class Schedule {
         return courses;
     }
 
+    /**
+     * Retourne tous les examens des cours de l'horaire pour le semestre courant.
+     *
+     * @return une liste de tous les examens
+     */
     public ArrayList<Exam> getExams() {
         ArrayList<Exam> exams = new ArrayList<>();
-        // for (Course course : getCourses()) {
-        //     ArrayList<Exam> courseExams = course.getSemesterByName(semesterName).getExams();
-        //     System.err.println("sfsff");
-        //     System.out.println(courseExams.get(0));
-        // }
         getCourses().forEach(course -> exams.addAll(course.getSemesterByName(semesterName).getExams()));
         return exams;
     }
 
+    /**
+     * Vérifie s'il y a un conflit entre les examens.
+     *
+     * @return true s'il y a un conflit entre les examens, false sinon
+     */
     public boolean hasExamsConflict() {
         for (Exam exam1 : getExams()) {
             for (Exam exam2 : getExams()) {
@@ -205,6 +234,12 @@ public class Schedule {
         return false;
     }
 
+    /**
+     * Calcule le score basé sur le temps entre les examens.
+     * Équivaut au nombre d'heures total entre tous les examens.
+     *
+     * @return le score basé sur le temps entre les examens
+     */
     public double getTimeBetweenExamsScore() {
         double value = 0;
         for (Exam exam1 : getExams()) {
@@ -218,7 +253,13 @@ public class Schedule {
         return value;
     }
 
-    public boolean hasConflictDay(DayOfWeek day) {
+    /**
+     * Vérifie s'il y a un conflit dans l'horaire pour un jour donné.
+     *
+     * @param day le jour à vérifier.
+     * @return true s'il y a un conflit, false sinon.
+     */
+    public boolean hasConflictOnSpecificDay(DayOfWeek day) {
         List<SchedulePeriod> periods = schedule.get(day);
         for (int i = 0; i < periods.size(); i++) {
             for (int j = i + 1; j < periods.size(); j++) {
@@ -230,17 +271,29 @@ public class Schedule {
         return false;
     }
 
+    /**
+     * Vérifie s'il y a un conflit dans l'horaire.
+     *
+     * @return true s'il y a un conflit, false sinon.
+     */
     public boolean hasConflict() {
         for (DayOfWeek day : DayOfWeek.values()) {
-            if (this.hasConflictDay(day)) {
+            if (this.hasConflictOnSpecificDay(day)) {
                 return true;
             }
 
         }
-
         return false;
     }
 
+    /**
+     * Génère toutes les combinaisons possibles d'horaires basées sur les cours
+     * donnés pour une certaine session.
+     *
+     * @param availableCourses les cours disponibles
+     * @param sessionName      le nom de la session
+     * @return une liste de toutes les combinaisons possibles d'horaires
+     */
     public static List<Schedule> generateAllPossibleSchedules(ArrayList<Course> availableCourses, String sessionName) {
         int length = availableCourses.size() > 10 ? 10 : availableCourses.size(); // maximum 10 cours dans un horaire
         List<Schedule> result = new ArrayList<>();
@@ -251,10 +304,16 @@ public class Schedule {
         return result;
     }
 
-    // n = nbr de cours à ajouter
-    // start: index actuel de la liste
-    // selections: les cours actuellement séléctionnés
-    // result: liste de toutes les horaires
+    /**
+     * Fonction d'aide récursive pour générer les combinaisons d'horaires.
+     *
+     * @param list        les cours disponibles pour générer l'horaire
+     * @param n           le nombre de cours à ajouter
+     * @param start       l'index actuel de la liste de cours admissibles
+     * @param selections  les cours actuellement sélectionnés
+     * @param result      la liste de toutes les horaires générées jusqu'à présent
+     * @param sessionName le nom de la session
+     */
     private static void generateScheduleHelper(List<Course> list, int n, int start, List<Course> selections,
                                                List<Schedule> result, String sessionName) {
         if (n == 0) {
@@ -267,6 +326,16 @@ public class Schedule {
         }
     }
 
+    /**
+     * Génère une liste d'horaires possibles respectant un certain nombre de crédits
+     * minimum et maximum et sans conflits d'horaire.
+     *
+     * @param availableCourses les cours disponibles
+     * @param minCredits       le nombre minimum de crédits
+     * @param maxCredits       le nombre maximum de crédits
+     * @param sessionName      le nom de la session
+     * @return une liste d'horaires possibles respectant les contraintes
+     */
     public static List<Schedule> genarateSuitableSchedules(ArrayList<Course> availableCourses, int minCredits, int maxCredits, String sessionName) {
         ArrayList<Schedule> results = new ArrayList<>();
         for (Schedule schedule : generateAllPossibleSchedules(availableCourses, sessionName)) {
@@ -281,8 +350,17 @@ public class Schedule {
         return results;
     }
 
+    /**
+     * Génère le meilleur horaires possible respectant un certain nombre de crédits
+     * minimum et maximum et sans conflits d'horaire.
+     *
+     * @param availableCourses les cours disponibles
+     * @param creditMin        le nombre minimum de crédits
+     * @param creditMax        le nombre maximum de crédits
+     * @param sessionName      le nom de la session
+     * @return le meilleur horaire possible
+     */
     public static Schedule genarateBestSchedule(ArrayList<Course> availableCourses, int creditMin, int creditMax, String sessionName) {
-        ArrayList<Schedule> results = new ArrayList<>();
         Schedule bestSchedule = new Schedule();
         double bestScore = 0;
         for (Schedule schedule : generateAllPossibleSchedules(availableCourses, sessionName)) {
@@ -299,6 +377,11 @@ public class Schedule {
         return bestSchedule;
     }
 
+    /**
+     * Calcule le score de l'horaire en fonction de plusieurs critères.
+     *
+     * @return le score de l'horaire
+     */
     public double getScheduleScore() {
         double point = 0;
         double time = 0;
@@ -307,7 +390,7 @@ public class Schedule {
             List<SchedulePeriod> schedule = this.schedule.get(day);
 
             // On attribut 5 points s'il n'y a pas de conflits dans la journee
-            if (!this.hasConflictDay(day)) {
+            if (!this.hasConflictOnSpecificDay(day)) {
                 point += 5;
             }
 
@@ -349,6 +432,11 @@ public class Schedule {
         return point + getTimeBetweenExamsScore() * 0.05;
     }
 
+    /**
+     * Retourne une représentation en chaîne de caractères de l'horaire.
+     *
+     * @return une chaîne de caractères représentant l'horaire
+     */
     @Override
     public String toString() {
         String str = "";
@@ -361,6 +449,9 @@ public class Schedule {
         return str;
     }
 
+    /**
+     * Affiche une grille de l'horaire dans la console.
+     */
     public void printScheduleGrid() {
         if (this.schedule != null) {
             LocalTime startHour = LocalTime.of(8, 0);
@@ -415,6 +506,11 @@ public class Schedule {
         }
     }
 
+    /**
+     * Calcule le nombre total de crédits de l'horaire.
+     *
+     * @return le nombre total de crédits
+     */
     public int getTotalCredits() {
         int totalCredits = 0;
 

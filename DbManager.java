@@ -86,7 +86,7 @@ public class DbManager {
      * @return la liste de tous les cours dans la db
      */
     public ArrayList<Course> getCourses() {
-        return new ArrayList<>(retreiveAllCourses().values());
+        return new ArrayList<>(courses.values());
     }
 
     /**

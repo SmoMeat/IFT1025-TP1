@@ -85,15 +85,22 @@ public class Schedule {
     }
 
     /**
-     * Retire un cours à l'emploi du temps pour une session donnée.
+     * Retire un cours à l'horaire pour un semestre donné.
      *
-     * @param courses     la liste des cours à ajouter
+     * @param course      le cours à ajouter
      * @param sessionName le nom de la session
      */
-    public void removeClass(Course course, String sessionName) {
-        course.getSemesterByName(sessionName).getPeriods().forEach(period -> {
-            schedule.get(period.getDayOfWeek()).remove(period);
-        });
+    public void removeCourse(Course course, String sessionName) {
+        for (DayOfWeek day : DayOfWeek.values()) {
+            ArrayList<SchedulePeriod> toRemove = new ArrayList<>();
+            for (SchedulePeriod schedulePeriod : schedule.get(day)) {
+                System.out.println(schedulePeriod.getCourse());
+                System.out.println(System.identityHashCode(schedulePeriod.getCourse()));
+                if (schedulePeriod.getCourse().equals(course))
+                    toRemove.add(schedulePeriod);
+            }
+            schedule.get(day).removeAll(toRemove);
+        }
     }
 
     /**

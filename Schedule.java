@@ -12,8 +12,18 @@ import java.util.Map;
  * Elle contient un tableau des jours de la semaine avec une liste de périodes d'horaire (SchedulePeriod).
  */
 public class Schedule {
+    public class SchedulePeriod extends Period {
+        public Course course;
+
+        SchedulePeriod(Course course, Period period) {
+            super(period);
+            this.course = course;
+        }
+    }
+
     private Map<DayOfWeek, List<SchedulePeriod>> schedule;
-    private String semesterName = "A00";
+    private String semesterName;
+    private int totalCredits;
 
     /**
      * Constructeur par défaut qui initialise un emploi du temps vide pour chaque jour de la semaine.

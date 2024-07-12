@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Student {
     private String firstname;
     private String lastname;
@@ -19,30 +22,22 @@ public class Student {
         this.matricule = matricule;
     }
 
-    /**
-     * Ajoute un cours à l'horaire de l'étudiant pour une session spécifique.
-     *
-     * @param course      le cours à ajouter
-     * @param sessionName le nom de la session
-     */
+
     public void addCourse(Course course, String sessionName) {
         schedule.addCourse(course, sessionName);
     }
 
-    /**
-     * Change l'horaire de l'étudiant pour un autre.
-     *
-     * @param schedule l'horaire à changer
-     */
+    public void generateBestSchedule(ArrayList<Course> availableCourses, String semesterName) {
+        for (Course course : availableCourses) {
+            availableCourses.remove(course);
+        }
+        List<Schedule> schedules =  Schedule.genarateSuitableSchedules(availableCourses, 14, 16, semesterName);
+    }
+
     public void setSchedule(Schedule schedule) {
         this.schedule = schedule;
     }
 
-    /**
-     * Renvoie l'horaire de l'étudiant.
-     *
-     * @return l'horaire de l'étudiant
-     */
     public Schedule getSchedule() {
         return this.schedule;
     }
@@ -101,11 +96,6 @@ public class Student {
         this.matricule = matricule;
     }
 
-    /**
-     * Retourne une représentation sous forme de chaîne de caractères de l'étudiant
-     *
-     * @return une chaîne de caractères représentant l'étudiant
-     */
     @Override
     public String toString() {
         return firstname + " " +  lastname + " (" + matricule + ")";

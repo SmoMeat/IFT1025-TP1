@@ -183,12 +183,6 @@ public class Semester {
         this.exams.removeAll(exams);
     }
 
-    /**
-     * Retourne une représentation sous forme de chaîne de caractères des périodes
-     * séparées par des virgules.
-     *
-     * @return une chaîne de caractères représentant les périodes
-     */
     public String getPeriodsAsString() {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -202,12 +196,6 @@ public class Semester {
         return stringBuilder.toString();
     }
 
-    /**
-     * Retourne une représentation sous forme de chaîne de caractères des examens
-     * séparées par des virgules.
-     *
-     * @return une chaîne de caractères représentant les examens
-     */
     public String getExamsAsString() {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -221,12 +209,8 @@ public class Semester {
         return stringBuilder.toString();
     }
 
-    /**
-     * Retourne une représentation sous forme de chaîne de caractères de le semestre.
-     *
-     * @return une chaîne de caractères représentant le semestre
-     */
     public String toString() {
         return name + " de " + start + " à " + end + " avec les périodes " + getPeriodsAsString() + " et les examens " + getExamsAsString();
+        // return name + " de " + start + " à " + end + " avec " + periods.size() + " périodes et " + exams.size() + " examens";
     }
 }

@@ -22,3 +22,4 @@ public class Exam extends Period {
     //     return "Examen " + getType() + " le " + getDate() + " de " + getStart() + " à " + getEnd();
     // }
 }
+

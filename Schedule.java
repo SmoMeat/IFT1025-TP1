@@ -521,3 +521,4 @@ public class Schedule {
         return totalCredits;
     }
 }
+

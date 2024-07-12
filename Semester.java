@@ -230,3 +230,5 @@ public class Semester {
         return name + " de " + start + " à " + end + " avec les périodes " + getPeriodsAsString() + " et les examens " + getExamsAsString();
     }
 }
+
+

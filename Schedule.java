@@ -7,10 +7,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * La classe Schedule représente un emploi du temps pour une semestre spécifique.
+ * Elle contient un tableau des jours de la semaine avec une liste de périodes d'horaire (SchedulePeriod).
+ */
 public class Schedule {
     private Map<DayOfWeek, List<SchedulePeriod>> schedule;
     private String semesterName = "A00";
 
+    /**
+     * Constructeur par défaut qui initialise un emploi du temps vide pour chaque jour de la semaine.
+     */
     public Schedule() {
         schedule = new HashMap<>();
         for (DayOfWeek day : DayOfWeek.values()) {
@@ -18,6 +25,11 @@ public class Schedule {
         }
     }
 
+    /**
+     * Constructeur qui initialise un emploi du temps vide pour chaque jour de la semaine et définit le nom du semestre.
+     *
+     * @param semesterName le nom du semestre
+     */
     public Schedule(String semesterName) {
         schedule = new HashMap<>();
         for (DayOfWeek day : DayOfWeek.values()) {
@@ -26,6 +38,11 @@ public class Schedule {
         this.semesterName = semesterName;
     }
 
+    /**
+     * Constructeur qui crée une copie d'un autre Schedule.
+     *
+     * @param other l'emploi du temps à copier
+     */
     public Schedule(Schedule other) {
         this(other.getSemesterName());
         for (DayOfWeek day : DayOfWeek.values()) {
@@ -35,16 +52,27 @@ public class Schedule {
         }
     }
 
+    /**
+     * Constructeur qui initialise un Schedule à partir d'une liste de cours et d'un nom de semestre.
+     *
+     * @param courses      la liste des cours à ajouter
+     * @param semesterName le nom du semestre
+     */
     public Schedule(List<Course> courses, String semesterName) {
         this(semesterName);
         addManyClasses(courses, semesterName);
     }
 
+    /**
+     * Ajoute un cours à l'emploi du temps pour une session donnée.
+     *
+     * @param course      le cours à ajouter
+     * @param sessionName le nom de la session
+     */
     public void addCourse(Course course, String sessionName) {
-        // TODO: vérifier conflit d'horaire
-        if (course.getSemesterByName(sessionName) == null) {
+        if (course.getSemesterByName(sessionName) == null)
             return;
-        }
+        
         course.getSemesterByName(sessionName).getPeriods().forEach(period -> {
             schedule.get(period.getDayOfWeek()).add(new SchedulePeriod(course, period));
         });
@@ -56,42 +84,61 @@ public class Schedule {
         }
     }
 
+    /**
+     * Ajoute plusieurs cours à l'emploi du temps pour une session donnée.
+     *
+     * @param courses     la liste des cours à ajouter
+     * @param sessionName le nom de la session
+     */
     public void removeClass(Course course, String sessionName) {
         course.getSemesterByName(sessionName).getPeriods().forEach(period -> {
             schedule.get(period.getDayOfWeek()).remove(period);
         });
     }
 
-    public List<SchedulePeriod> getClassesForSpecifDay(DayOfWeek day) {
+    /**
+     * Récupère les périodes d'horaire pour un jour spécifique.
+     *
+     * @param day le jour de la semaine
+     * @return la liste des périodes d'horaire pour le jour spécifié
+     */
+    public List<SchedulePeriod> getClassesForSpecificDay(DayOfWeek day) {
         return schedule.get(day);
     }
 
-    public List<SchedulePeriod> order(DayOfWeek day) {
-        List<SchedulePeriod> Speriod = this.schedule.get(day);
+    /**
+     * Trie et retourne les périodes d'horaire pour un jour spécifique par ordre croissant de début.
+     *
+     * @param day le jour de la semaine
+     * @return la liste triée des périodes d'horaire pour le jour spécifié
+     */
+    public List<SchedulePeriod> orderPeriodsForSpecificDay(DayOfWeek day) {
+        List<SchedulePeriod> schedulePeriods = getClassesForSpecificDay(day);
         ArrayList<SchedulePeriod> copie = new ArrayList<>();
         ArrayList<SchedulePeriod> result = new ArrayList<>();
 
-        for (SchedulePeriod t : Speriod) {
-            copie.add(t);
+        for (SchedulePeriod schedulePeriod : schedulePeriods) {
+            copie.add(schedulePeriod);
         }
 
-        SchedulePeriod periodMin = new SchedulePeriod(new Course("IFT", 1015, 3),
-                new Period(LocalTime.of(10,30), LocalTime.of(12,30), DayOfWeek.TUESDAY, ClassType.TH, "A"));
+        SchedulePeriod earliestPeriod = new SchedulePeriod(
+            new Course("IFT", 1015, 3),
+            new Period(LocalTime.of(10,30), LocalTime.of(12,30), DayOfWeek.TUESDAY, ClassType.TH, "A")
+        );
 
         while (!copie.isEmpty()) {
-            int Mintime = 1000000;
+            int minimumTime = 1440;
             for (SchedulePeriod period : copie) {
-                int currentTime = 0;
-                currentTime = period.getStart().getHour() * 60 + period.getStart().getMinute();
+                int currentTime = period.getStart().getHour() * 60 + period.getStart().getMinute();
 
-                if (currentTime < Mintime) {
-                    Mintime = currentTime;
-                    periodMin = period;
+                if (currentTime <= minimumTime) {
+                    minimumTime = currentTime;
+                    earliestPeriod = period;
                 }
             }
 
-            result.add(periodMin);
-            copie.remove(periodMin);
+            result.add(earliestPeriod);
+            copie.remove(earliestPeriod);
         }
         return result;
     }
@@ -126,8 +173,8 @@ public class Schedule {
         
         for (DayOfWeek dayOfWeek : DayOfWeek.values()) {
             for (SchedulePeriod schedulePeriod : schedule.get(dayOfWeek)) {
-                if (!courses.contains(schedulePeriod.course))
-                    courses.add(schedulePeriod.course);
+                if (!courses.contains(schedulePeriod.getCourse()))
+                    courses.add(schedulePeriod.getCourse());
             }
         }
 
@@ -136,12 +183,12 @@ public class Schedule {
 
     public ArrayList<Exam> getExams() {
         ArrayList<Exam> exams = new ArrayList<>();
-        for (Course course : getCourses()) {
-            ArrayList<Exam> courseExams = course.getSemesterByName(semesterName).getExams();
-            System.err.println("sfsff");
-            System.out.println(courseExams.size());
-        }
-        // getCourses().forEach(course -> exams.addAll(course.getSemesterByName(semesterName).getExams()));
+        // for (Course course : getCourses()) {
+        //     ArrayList<Exam> courseExams = course.getSemesterByName(semesterName).getExams();
+        //     System.err.println("sfsff");
+        //     System.out.println(courseExams.get(0));
+        // }
+        getCourses().forEach(course -> exams.addAll(course.getSemesterByName(semesterName).getExams()));
         return exams;
     }
 
@@ -265,7 +312,7 @@ public class Schedule {
             }
 
             // Si on a plus au moins 1h entre deux cours, on ajoute 2 points
-            List<SchedulePeriod> orderSchedule = this.order(day);
+            List<SchedulePeriod> orderSchedule = this.orderPeriodsForSpecificDay(day);
             for (int i = 0; i < orderSchedule.size() - 1; i++) {
                 if (orderSchedule.get(i).timeBetweenV2(orderSchedule.get(i + 1)) >= 1) {
                     point += 1;
@@ -333,7 +380,7 @@ public class Schedule {
                     int endSlot = (period.getEnd().getHour() - startHour.getHour()) * 2 +
                             (period.getEnd().getMinute() / 30);
                     for (int i = startSlot; i < endSlot; i++) {
-                        grid[i][dayIndex] = period.course.getAbbreviatedName();
+                        grid[i][dayIndex] = period.getCourse().getAbbreviatedName();
                     }
                 }
             }
@@ -354,7 +401,14 @@ public class Schedule {
             System.out.println("╠═══════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╣");
 
             for (Exam exam : getExams()) {
-                System.out.println("║ " + exam + "\t\t\t\t\t\t      ║");
+                String examString = exam.toString();
+
+                if (examString.length() > 75)
+                    examString = examString.substring(0, 75);
+                if (examString.length() < 75)
+                    examString = String.format("%-75s", examString);
+
+                System.out.println("║ " + examString + " ║");
             }
 
             System.out.println("╚═════════════════════════════════════════════════════════════════════════════╝");

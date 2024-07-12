@@ -144,24 +144,21 @@ public class Course {
         return this.prerequisites;
     }
 
-
     @Override
-    public boolean equals(Object o) {
-        return equals((Course) o);
-    }
-    
-    public boolean equals(Course other) {
-        if (!subject.equals(other.getSubject()))
+    public boolean equals(Object other) {
+        Course otherCourse = (Course) other;
+
+        if (!subject.equals(otherCourse.getSubject()))
             return false;
-        if (value != other.getValue())
+        if (value != otherCourse.getValue())
             return false;        
-        if (!name.equals(other.getName()))
+        if (!name.equals(otherCourse.getName()))
             return false;
-        if (!description.equals(other.getDescription()))
+        if (!description.equals(otherCourse.getDescription()))
             return false;
-        if (credit != other.getCredit())
+        if (credit != otherCourse.getCredit())
             return false;
-        if (!semesters.equals(other.getSemesters()))
+        if (!semesters.equals(otherCourse.getSemesters()))
             return false;
 
         return true;

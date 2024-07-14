@@ -222,6 +222,97 @@ public class Period {
                 return false;
             }
         }
-    }    
+    }
+
+    /**
+     * Méthode principale pour exécuter les tests unitaires.
+     *
+     * @param args Les arguments de la ligne de commande (non utilisés).
+     */
+    public static void main(String[] args) {
+        testPeriodConstructor();
+        testTimeBetween();
+        testTimeBetweenV2();
+        testTimeOf();
+        testInConflict();
+
+        System.out.println("Tous les tests de Period ont réussi.");
+    }
+
+    /**
+     * Teste le constructeur de la classe Period.
+     */
+    public static void testPeriodConstructor() {
+        LocalTime start = LocalTime.of(9, 0);
+        LocalTime end = LocalTime.of(11, 0);
+        DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
+        ClassType type = ClassType.TH;
+        String section = "A";
+
+        Period period = new Period(start, end, dayOfWeek, type, section);
+
+        assert period.getStart().equals(start) : "Heure de début incorrecte";
+        assert period.getEnd().equals(end) : "Heure de fin incorrecte";
+        assert period.getDayOfWeek().equals(dayOfWeek) : "Jour de la semaine incorrect";
+        assert period.getType().equals(type) : "Type de cours incorrect";
+        assert period.getSection().equals(section) : "Section de cours incorrecte";
+
+        System.out.println("testPeriodConstructor réussi.");
+    }
+
+    /**
+     * Teste la méthode timeBetween() de la classe Period.
+     */
+    public static void testTimeBetween() {
+        Period period1 = new Period(LocalTime.of(9, 30), LocalTime.of(11, 30), DayOfWeek.MONDAY, ClassType.TH, "A");
+        Period period2 = new Period(LocalTime.of(13, 30), LocalTime.of(15, 30), DayOfWeek.TUESDAY, ClassType.TP, "B");
+
+        double timeBetween = period1.timeBetween(period2);
+
+        assert timeBetween == 28.0 : "Le temps entre deux périodes (v1) est incorrect";
+
+        System.out.println("testTimeBetween réussi.");
+    }
+
+    /**
+     * Teste la méthode timeBetweenV2() de la classe Period.
+     */
+    public static void testTimeBetweenV2() {
+        Period period1 = new Period(LocalTime.of(9, 0), LocalTime.of(11, 0), DayOfWeek.MONDAY, ClassType.TH, "A");
+        Period period2 = new Period(LocalTime.of(13, 0), LocalTime.of(15, 0), DayOfWeek.TUESDAY, ClassType.TP, "B");
+
+        double timeBetween = period1.timeBetweenV2(period2);
+
+        assert timeBetween == 26.0 : "Le temps entre deux périodes (v2) est incorrect";
+
+        System.out.println("testTimeBetweenV2 réussi.");
+    }
+
+    /**
+     * Teste la méthode timeOf() de la classe Period.
+     */
+    public static void testTimeOf() {
+        Period period = new Period(LocalTime.of(9, 0), LocalTime.of(11, 0), DayOfWeek.MONDAY, ClassType.TH, "A");
+
+        double timeOf = period.timeOf();
+
+        assert timeOf == 2.0 : "La durée du cours est incorrecte";
+
+        System.out.println("testTimeOf réussi.");
+    }
+
+    /**
+     * Teste la méthode inConflict() de la classe Period.
+     */
+    public static void testInConflict() {
+        Period period1 = new Period(LocalTime.of(9, 0), LocalTime.of(11, 0), DayOfWeek.MONDAY, ClassType.TH, "A");
+        Period period2 = new Period(LocalTime.of(10, 0), LocalTime.of(12, 0), DayOfWeek.MONDAY, ClassType.TP, "B");
+
+        boolean conflict = period1.inConflict(period2);
+
+        assert conflict == true : "La détection de conflit incorrecte";
+
+        System.out.println("testInConflict réussi.");
+    }
 }
 

@@ -1,3 +1,4 @@
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 /**
@@ -23,6 +24,8 @@ public class Course {
     public Course(String subject, int value, int credit) {
         this.subject = subject;
         this.value = value;
+        this.name = subject + value;
+        this.description = "Description vide";
         this.credit = credit;
     }
 
@@ -208,5 +211,97 @@ public class Course {
             return false;
 
         return true;
+    }
+
+
+
+    /**
+     * Méthode principale pour exécuter les tests unitaires.
+     *
+     * @param args Les arguments de la ligne de commande (non utilisés).
+     */
+    public static void main(String[] args) {
+        testCourseConstructor();
+        testCoursePrerequisites();
+        testCourseSemesters();
+
+        System.out.println("Tous les tests de Course ont réussi.");
+    }
+
+    /**
+     * Teste les constructeurs de la classe Course.
+     */
+    public static void testCourseConstructor() {
+        Course course1 = new Course("IFT", 1015, 3);
+        Course course2 = new Course("MAT", 1720, "Probabilité", "Espace de probabilité. Analyse combinatoire. Probabilité conditionnelle.", 4);
+
+        assert course1.getSubject().equals("IFT") : "Sujet incorrect pour course1";
+        assert course1.getValue() == 1015 : "Valeur incorrecte pour course1";
+        assert course1.getName().equals("IFT1015") : "Nom incorrect pour course1";
+        assert course1.getDescription().equals("Description vide") : "Description incorrecte pour course1";
+        assert course1.getCredit() == 3 : "Crédits incorrects pour course1";
+
+        assert course2.getSubject().equals("MAT") : "Sujet incorrect pour course2";
+        assert course2.getValue() == 1720 : "Valeur incorrecte pour course2";
+        assert course2.getName().equals("Probabilité") : "Nom incorrect pour course2";
+        assert course2.getDescription().equals("Espace de probabilité. Analyse combinatoire. Probabilité conditionnelle.") : "Description incorrecte pour course2";
+        assert course2.getCredit() == 4 : "Crédits incorrects pour course2";
+
+        System.out.println("testCourseConstructor réussi.");
+    }
+
+    /**
+     * Teste l'ajout et la vérification des prérequis pour la classe Course.
+     */
+    public static void testCoursePrerequisites() {
+        Course course1 = new Course("IFT", 1015, 3);
+        Course course2 = new Course("MAT", 1348, 4);
+
+        course1.addPrerequisite(course2);
+
+        ArrayList<Course> prerequisites = course1.getPrerequisites();
+        assert prerequisites.size() == 1 : "Nombre de prérequis incorrect pour course1";
+        assert prerequisites.get(0).equals(course2) : "Prérequis incorrect pour course1";
+
+        try {
+            course1.addPrerequisite(course2); // Cette ligne devrait lever une exception
+            System.out.println("Erreur : Exception attendue pour l'ajout de prérequis déjà existant.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("testCoursePrerequisites réussi."); // Exception attendue donc le test est réussi
+        }
+    }
+
+    /**
+     * Teste l'ajout et la gestion des semestres pour la classe Course.
+     */
+    public static void testCourseSemesters() {
+        Course course = new Course("IFT", 1015, 3);
+        Semester semester1 = new Semester("A24", LocalDate.of(2024, 9, 1), LocalDate.of(2024, 12, 20));
+        Semester semester2 = new Semester("H25", LocalDate.of(2025, 1, 7), LocalDate.of(2025, 4, 30));
+
+        course.addSemester(semester1);
+        course.addSemester(semester2);
+
+        ArrayList<Semester> semesters = course.getSemesters();
+        assert semesters.size() == 2 : "Nombre de semestres incorrect pour course";
+        assert semesters.contains(semester1) : "Semestre 1 manquant pour course";
+        assert semesters.contains(semester2) : "Semestre 2 manquant pour course";
+
+        course.removeSemester(semester1);
+
+        semesters = course.getSemesters();
+        assert semesters.size() == 1 : "Nombre de semestres incorrect après suppression pour course";
+        assert !semesters.contains(semester1) : "Semestre 1 encore présent après suppression pour course";
+
+        ArrayList<Semester> newSemesters = new ArrayList<>();
+        newSemesters.add(new Semester("A24", LocalDate.of(2024, 9, 1), LocalDate.of(2024, 12, 20)));
+        newSemesters.add(new Semester("H25", LocalDate.of(2025, 1, 7), LocalDate.of(2025, 4, 30)));
+        course.addSemesters(newSemesters);
+
+        semesters = course.getSemesters();
+        assert semesters.size() == 3 : "Nombre de semestres incorrect après ajout multiple pour course";
+        assert semesters.containsAll(newSemesters) : "Semestres ajoutés incorrects pour course";
+
+        System.out.println("testCourseSemesters réussi.");
     }
 }

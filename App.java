@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * La classe App représente le point d'entrée de l'application de planification académique.
+ * Elle permet la gestion des cours et des horaires des étudiants.
+ */
 public class App {
     static DbManager dbManager = new DbManager();
     static ArrayList<Course> courses = dbManager.getCourses();
@@ -13,6 +17,10 @@ public class App {
     static Scanner scanner = new Scanner(System.in);
     static String userInput;
 
+    /**
+     * Le point d'entrée de l'application.
+     * @param args les arguments de la ligne de commande
+     */
     public static void main(String[] args) {
         System.err.println("\t*-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-*");
         System.out.println("\t\tBienvenue sur le planificateur académique");
@@ -42,6 +50,9 @@ public class App {
         dbManager.closeConnection();
     }
 
+    /**
+     * Gère l'interface de gestion des cours.
+     */
     public static void askCoursManager() {
         System.out.println(getGestionCoursMessage());
         while (!(userInput = scanner.nextLine()).equalsIgnoreCase("back")) {
@@ -67,6 +78,9 @@ public class App {
         }
     }
 
+    /**
+     * Demande à l'utilisateur de modifier un cours.
+     */
     public static void askModifyCourse() {
         System.out.println("Quel cours voulez-vous modifier (ex: IFT1015) ?");
         int index = askFindCourse();
@@ -90,7 +104,7 @@ public class App {
             course.setValue( askCourseValue() );
         }
 
-        System.out.println("Voulez-vous modifier la nom (" + course.getName() + ") [y/n] ?");
+        System.out.println("Voulez-vous modifier le nom (" + course.getName() + ") [y/n] ?");
         if (askYesOrNo()) {
             System.out.println("Entrez le nouveau nom:");
             course.setName( askNoWhiteSpace() );
@@ -102,7 +116,7 @@ public class App {
             course.setDescription( scanner.nextLine().trim() );
         }
 
-        System.out.println("Voulez-vous modifier la nombre de crédits (" + course.getCredit() + ") [y/n] ?");
+        System.out.println("Voulez-vous modifier le nombre de crédits (" + course.getCredit() + ") [y/n] ?");
         if (askYesOrNo()) {
             System.out.println("Entrez le nouveau nombre de crédits:");
             course.setCredit( askCourseCredit() );
@@ -114,8 +128,12 @@ public class App {
         }
     }
 
+    /**
+     * Demande à l'utilisateur de modifier un semestre.
+     * @param course le cours pour lequel le semestre doit être modifié
+     */
     public static void askModifySemester(Course course) {
-        System.out.println("Quel semestre voulez-vous modifier parmis: " + course.getSemestersAsString() + " ?");
+        System.out.println("Quel semestre voulez-vous modifier parmi: " + course.getSemestersAsString() + " ?");
     
         Semester semester;
 
@@ -164,6 +182,10 @@ public class App {
         course.addSemesters(askSemesters());
     }
 
+    /**
+     * Demande à l'utilisateur de modifier un examen dans un semestre.
+     * @param semester le semestre pour lequel les examens doivent être modifiés
+     */
     public static void askModifyExam(Semester semester) {
         ArrayList<Exam> examsToRemove = new ArrayList<>();
         for (Exam exam : semester.getExams()) {
@@ -177,6 +199,10 @@ public class App {
         semester.addExams(askExams());
     }
 
+    /**
+     * Demande à l'utilisateur de modifier une période dans un semestre.
+     * @param semester le semestre pour lequel les périodes doivent être modifiées
+     */
     public static void askModifyPeriod(Semester semester) {
         ArrayList<Period> periodsToRemove = new ArrayList<>();
         for (Period period : semester.getPeriods()) {
@@ -190,6 +216,11 @@ public class App {
         semester.addPeriods(askPeriods());
     }
 
+    /**
+     * Demande à l'utilisateur de trouver un semestre dans un cours.
+     * @param course le cours pour lequel un semestre doit être trouvé
+     * @return l'index du semestre trouvé ou -1 si non trouvé
+     */
     public static int askFindSemester(Course course) {
         String userInput = scanner.nextLine();
         int index = getIndexOfSemester(course, userInput);
@@ -206,6 +237,12 @@ public class App {
         return index;
     }
 
+    /**
+     * Obtient l'index d'un semestre dans un cours.
+     * @param course le cours contenant le semestre
+     * @param semesterName le nom du semestre à trouver
+     * @return l'index du semestre trouvé ou -1 si non trouvé
+     */
     public static int getIndexOfSemester(Course course, String semesterName) {
         for (int i=0; i<course.getSemesters().size(); i++) {
             if (course.getSemesters().get(i).getName().equals(semesterName)) {
@@ -215,6 +252,20 @@ public class App {
         return -1;
     }
 
+
+
+
+
+
+
+
+
+
+    /**
+     * Demande à l'utilisateur de répondre par 'y' ou 'n' et retourne un booléen en conséquence.
+     *
+     * @return true si l'utilisateur répond 'y', 'yes' ou 'oui', false si l'utilisateur répond 'n', 'no' ou 'non'.
+     */
     public static boolean askYesOrNo() {
         try {
             String userInput = scanner.nextLine().trim().toLowerCase();
@@ -229,6 +280,11 @@ public class App {
         }
     }
 
+    /**
+     * Retourne les cours sous forme de chaîne de caractères, séparés par des virgules.
+     *
+     * @return une chaîne de caractères représentant les cours.
+     */
     public static String getCoursesAsString() {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -242,6 +298,12 @@ public class App {
         return stringBuilder.toString();
     }
 
+    /**
+     * Demande à l'utilisateur de saisir le nom d'un cours et retourne l'index du cours.
+     * Si le cours n'est pas trouvé, l'utilisateur est invité à réessayer ou à taper 'stop'.
+     *
+     * @return l'index du cours, ou -1 si l'utilisateur tape 'stop'.
+     */
     public static int askFindCourse() {
         String userInput = scanner.nextLine();
         int index = getIndexOfCourse(userInput);
@@ -258,6 +320,9 @@ public class App {
         return index;
     }
 
+    /**
+     * Demande à l'utilisateur quel cours supprimer et le supprime de la liste des cours.
+     */
     public static void askDeleteCourse() {
         System.out.println("Quelle cours voulez-vous supprimer (ex: IFT1015) ?");
         int index = askFindCourse();
@@ -269,8 +334,14 @@ public class App {
         System.out.println("<!> Le cours " + userInput + " a bien été supprimé <!>");
     }
 
+    /**
+     * Retourne l'index d'un cours basé sur son nom.
+     *
+     * @param courseName le nom du cours.
+     * @return l'index du cours, ou -1 si le cours n'est pas trouvé.
+     */
     public static int getIndexOfCourse(String courseName) {
-        for (int i=0; i<courses.size(); i++) {
+        for (int i = 0; i < courses.size(); i++) {
             if (courses.get(i).getAbbreviatedName().equals(courseName)) {
                 return i;
             }
@@ -278,6 +349,11 @@ public class App {
         return -1;
     }
 
+    /**
+     * Demande à l'utilisateur de saisir le sujet d'un cours et retourne le sigle du cours en majuscules.
+     *
+     * @return le sigle du cours.
+     */
     public static String askCourseSubject() {
         try {
             String userInput = scanner.nextLine().trim().toUpperCase();
@@ -290,6 +366,11 @@ public class App {
         }
     }
 
+    /**
+     * Demande à l'utilisateur de saisir la valeur d'un cours et retourne cette valeur.
+     *
+     * @return la valeur du cours.
+     */
     public static int askCourseValue() {
         try {
             String userInput = scanner.nextLine().trim().toUpperCase();
@@ -302,6 +383,11 @@ public class App {
         }
     }
 
+    /**
+     * Demande à l'utilisateur de saisir une chaîne de caractères non vide et retourne cette chaîne.
+     *
+     * @return une chaîne de caractères non vide.
+     */
     public static String askNoWhiteSpace() {
         try {
             String userInput = scanner.nextLine().trim().toUpperCase();
@@ -314,6 +400,11 @@ public class App {
         }
     }
 
+    /**
+     * Demande à l'utilisateur de saisir le nombre de crédits d'un cours et retourne ce nombre.
+     *
+     * @return le nombre de crédits.
+     */
     public static int askCourseCredit() {
         try {
             return Integer.parseInt(scanner.nextLine());
@@ -323,6 +414,9 @@ public class App {
         }
     }
 
+    /**
+     * Demande à l'utilisateur d'ajouter un cours avec ses détails et l'ajoute à la liste des cours.
+     */
     public static void askAddCourse() {
         System.out.println("Quel est le sigle du cours (ex: IFT, MAT):");
         String subject = askCourseSubject();
@@ -349,6 +443,11 @@ public class App {
         System.out.println("<!> Ajout de '" + course + "' <!>");
     }
 
+    /**
+     * Demande à l'utilisateur d'ajouter des semestres et retourne une liste de semestres.
+     *
+     * @return une liste de semestres.
+     */
     public static ArrayList<Semester> askSemesters() {
         ArrayList<Semester> semesters = new ArrayList<>();
         
@@ -364,6 +463,11 @@ public class App {
         return semesters;
     }
 
+    /**
+     * Demande à l'utilisateur de fournir les détails d'un semestre et retourne le semestre.
+     *
+     * @return un semestre.
+     */
     public static Semester askSemester() {
         System.out.println("Quel semestre voulez-vous ajouter (ex: A24, H25):");
         String name = askSemesterName();
@@ -383,6 +487,11 @@ public class App {
         return new Semester(name, startDate, endDate, periods, exams);
     }
 
+    /**
+     * Demande à l'utilisateur de fournir le nom d'un semestre et retourne ce nom.
+     *
+     * @return le nom du semestre.
+     */
     public static String askSemesterName() {
         try {
             String userInput = scanner.nextLine();
@@ -395,6 +504,11 @@ public class App {
         }
     }
 
+    /**
+     * Demande à l'utilisateur d'ajouter des examens et retourne une liste d'examens.
+     *
+     * @return une liste d'examens.
+     */
     public static ArrayList<Exam> askExams() {
         ArrayList<Exam> exams = new ArrayList<>();
         while (askYesOrNo()) {
@@ -406,6 +520,11 @@ public class App {
         return exams;
     }
 
+    /**
+     * Demande à l'utilisateur de fournir les détails d'un examen et retourne cet examen.
+     *
+     * @return un examen.
+     */
     public static Exam askExam() {
         System.out.println("Quelle la date de l'examen (format: YYYY-MM-DD):");
         LocalDate date = askDate();
@@ -425,6 +544,11 @@ public class App {
         return new Exam(date, startTime, endTime, classType, section);
     }
 
+    /**
+     * Demande à l'utilisateur d'ajouter des périodes et retourne une liste de périodes.
+     *
+     * @return une liste de périodes.
+     */
     public static ArrayList<Period> askPeriods() {
         ArrayList<Period> periods = new ArrayList<>();
         while (askYesOrNo()) {
@@ -436,6 +560,11 @@ public class App {
         return periods;
     }
 
+    /**
+     * Demande à l'utilisateur de fournir les détails d'une période et retourne cette période.
+     *
+     * @return une période.
+     */
     public static Period askPeriod() {
         System.out.println("Quelle le temps de début de la période (format: hh:mm):");
         LocalTime startTime = askTime();
@@ -455,6 +584,11 @@ public class App {
         return new Period(startTime, endTime, dayOfWeek, classType, section);
     }
 
+    /**
+     * Demande à l'utilisateur de fournir le type de période et retourne ce type.
+     *
+     * @return le type de période.
+     */
     public static ClassType askClassType() {
         try {
             return ClassType.valueOf(scanner.nextLine());
@@ -464,6 +598,11 @@ public class App {
         }
     }
 
+    /**
+     * Demande à l'utilisateur de fournir le jour de la semaine et retourne ce jour.
+     *
+     * @return le jour de la semaine.
+     */
     public static DayOfWeek askDayOfWeek() {
         try {
             return DayOfWeek.valueOf(scanner.nextLine());
@@ -473,6 +612,11 @@ public class App {
         }
     }
 
+    /**
+     * Demande à l'utilisateur de fournir une heure et retourne cette heure.
+     *
+     * @return l'heure.
+     */
     public static LocalTime askTime() {
         try {
             return LocalTime.parse(scanner.nextLine());
@@ -482,6 +626,11 @@ public class App {
         }
     }
 
+    /**
+     * Demande à l'utilisateur de fournir une date et retourne cette date.
+     *
+     * @return la date.
+     */
     public static LocalDate askDate() {
         try {
             return LocalDate.parse(scanner.nextLine());
@@ -491,6 +640,9 @@ public class App {
         }
     }
 
+    /**
+     * Demande à l'utilisateur de fournir le code d'un cours et affiche les détails de ce cours.
+     */
     public static void askCourseDetails() {
         System.out.println("Entrez le code du cours à regarder (ex: IFT1015):");
         userInput = scanner.nextLine();

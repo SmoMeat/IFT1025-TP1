@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class Schedule {
     private Map<DayOfWeek, List<SchedulePeriod>> schedule;
-    private String semesterName = "A00";
+    private String semesterName = "A24";
 
     /**
      * Constructeur par défaut qui initialise un emploi du temps vide pour chaque jour de la semaine.

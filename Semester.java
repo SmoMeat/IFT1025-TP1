@@ -1,4 +1,6 @@
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class Semester {
@@ -229,4 +231,185 @@ public class Semester {
     public String toString() {
         return name + " de " + start + " à " + end + " avec les périodes " + getPeriodsAsString() + " et les examens " + getExamsAsString();
     }
+
+    /**
+     * Méthode principale pour exécuter les tests unitaires.
+     *
+     * @param args Les arguments de la ligne de commande (non utilisés).
+     */
+    public static void main(String[] args) {
+        testSemesterConstructorWithPeriodsAndExams();
+        testSemesterConstructorWithoutPeriodsAndExams();
+        testAddPeriod();
+        testAddPeriods();
+        testRemovePeriod();
+        testRemovePeriods();
+        testAddExam();
+        testAddExams();
+        testRemoveExam();
+        testRemoveExams();
+
+        System.out.println("Tous les tests de Semester ont réussi.");
+    }
+
+    /**
+     * Teste le constructeur de la classe Semester avec périodes et examens.
+     */
+    public static void testSemesterConstructorWithPeriodsAndExams() {
+        LocalDate start = LocalDate.of(2024, 9, 1);
+        LocalDate end = LocalDate.of(2024, 12, 31);
+        ArrayList<Period> periods = new ArrayList<>();
+        periods.add(new Period(LocalTime.now(), LocalTime.now(), DayOfWeek.MONDAY, ClassType.TH, ""));
+        ArrayList<Exam> exams = new ArrayList<>();
+        exams.add(new Exam(LocalDate.now(), LocalTime.now(), LocalTime.now(), ClassType.TH, ""));
+
+        Semester semester = new Semester("A24", start, end, periods, exams);
+
+        assert semester.getName().equals("A24") : "Identifiant du semestre incorrect";
+        assert semester.getStart().equals(start) : "Date de début du semestre incorrecte";
+        assert semester.getEnd().equals(end) : "Date de fin du semestre incorrecte";
+        assert semester.getPeriods().containsAll(periods) : "Liste des périodes incorrecte";
+        assert semester.getExams().containsAll(exams) : "Liste des examens incorrecte";
+
+        System.out.println("testSemesterConstructorWithPeriodsAndExams réussi.");
+    }
+
+    /**
+     * Teste le constructeur de la classe Semester sans périodes et examens.
+     */
+    public static void testSemesterConstructorWithoutPeriodsAndExams() {
+        LocalDate start = LocalDate.of(2024, 9, 1);
+        LocalDate end = LocalDate.of(2024, 12, 31);
+
+        Semester semester = new Semester("A24", start, end);
+
+        assert semester.getName().equals("A24") : "Identifiant du semestre incorrect";
+        assert semester.getStart().equals(start) : "Date de début du semestre incorrecte";
+        assert semester.getEnd().equals(end) : "Date de fin du semestre incorrecte";
+        assert semester.getPeriods().isEmpty() : "Liste des périodes non vide";
+        assert semester.getExams().isEmpty() : "Liste des examens non vide";
+
+        System.out.println("testSemesterConstructorWithoutPeriodsAndExams réussi.");
+    }
+
+    /**
+     * Teste la méthode addPeriod() de la classe Semester.
+     */
+    public static void testAddPeriod() {
+        Semester semester = new Semester("A24", LocalDate.of(2024, 9, 1), LocalDate.of(2024, 12, 31));
+        Period period = new Period(LocalTime.now(), LocalTime.now(), DayOfWeek.MONDAY, ClassType.TH, "");
+
+        semester.addPeriod(period);
+
+        assert semester.getPeriods().contains(period) : "La période n'a pas été ajoutée correctement";
+
+        System.out.println("testAddPeriod réussi.");
+    }
+
+    /**
+     * Teste la méthode addPeriods() de la classe Semester.
+     */
+    public static void testAddPeriods() {
+        Semester semester = new Semester("A24", LocalDate.of(2024, 9, 1), LocalDate.of(2024, 12, 31));
+        ArrayList<Period> periods = new ArrayList<>();
+        periods.add(new Period(LocalTime.now(), LocalTime.now(), DayOfWeek.MONDAY, ClassType.TH, ""));
+
+        semester.addPeriods(periods);
+
+        assert semester.getPeriods().containsAll(periods) : "Les périodes n'ont pas été ajoutées correctement";
+
+        System.out.println("testAddPeriods réussi.");
+    }
+
+    /**
+     * Teste la méthode removePeriod() de la classe Semester.
+     */
+    public static void testRemovePeriod() {
+        Semester semester = new Semester("A24", LocalDate.of(2024, 9, 1), LocalDate.of(2024, 12, 31));
+        Period period = new Period(LocalTime.now(), LocalTime.now(), DayOfWeek.MONDAY, ClassType.TH, "");
+        semester.addPeriod(period);
+
+        semester.removePeriod(period);
+
+        assert !semester.getPeriods().contains(period) : "La période n'a pas été retirée correctement";
+
+        System.out.println("testRemovePeriod réussi.");
+    }
+
+    /**
+     * Teste la méthode removePeriods() de la classe Semester.
+     */
+    public static void testRemovePeriods() {
+        Semester semester = new Semester("A24", LocalDate.of(2024, 9, 1), LocalDate.of(2024, 12, 31));
+        ArrayList<Period> periods = new ArrayList<>();
+        periods.add(new Period(LocalTime.now(), LocalTime.now(), DayOfWeek.MONDAY, ClassType.TH, ""));
+        semester.addPeriods(periods);
+
+        semester.removePeriods(periods);
+
+        assert semester.getPeriods().isEmpty() : "Les périodes n'ont pas été retirées correctement";
+
+        System.out.println("testRemovePeriods réussi.");
+    }
+
+    /**
+     * Teste la méthode addExam() de la classe Semester.
+     */
+    public static void testAddExam() {
+        Semester semester = new Semester("A24", LocalDate.of(2024, 9, 1), LocalDate.of(2024, 12, 31));
+        Exam exam = new Exam(LocalDate.now(), LocalTime.now(), LocalTime.now(), ClassType.TH, "");
+
+        semester.addExam(exam);
+
+        assert semester.getExams().contains(exam) : "L'examen n'a pas été ajouté correctement";
+
+        System.out.println("testAddExam réussi.");
+    }
+
+    /**
+     * Teste la méthode addExams() de la classe Semester.
+     */
+    public static void testAddExams() {
+        Semester semester = new Semester("A24", LocalDate.of(2024, 9, 1), LocalDate.of(2024, 12, 31));
+        ArrayList<Exam> exams = new ArrayList<>();
+        exams.add(new Exam(LocalDate.now(), LocalTime.now(), LocalTime.now(), ClassType.TH, ""));
+
+        semester.addExams(exams);
+
+        assert semester.getExams().containsAll(exams) : "Les examens n'ont pas été ajoutés correctement";
+
+        System.out.println("testAddExams réussi.");
+    }
+
+    /**
+     * Teste la méthode removeExam() de la classe Semester.
+     */
+    public static void testRemoveExam() {
+        Semester semester = new Semester("A24", LocalDate.of(2024, 9, 1), LocalDate.of(2024, 12, 31));
+        Exam exam = new Exam(LocalDate.now(), LocalTime.now(), LocalTime.now(), ClassType.TH, "");
+        semester.addExam(exam);
+
+        semester.removeExam(exam);
+
+        assert !semester.getExams().contains(exam) : "L'examen n'a pas été retiré correctement";
+
+        System.out.println("testRemoveExam réussi.");
+    }
+
+    /**
+     * Teste la méthode removeExams() de la classe Semester.
+     */
+    public static void testRemoveExams() {
+        Semester semester = new Semester("A24", LocalDate.of(2024, 9, 1), LocalDate.of(2024, 12, 31));
+        ArrayList<Exam> exams = new ArrayList<>();
+        exams.add(new Exam(LocalDate.now(), LocalTime.now(), LocalTime.now(), ClassType.TH, ""));
+        semester.addExams(exams);
+
+        semester.removeExams(exams);
+
+        assert semester.getExams().isEmpty() : "Les examens n'ont pas été retirés correctement";
+
+        System.out.println("testRemoveExams réussi.");
+    }
+
 }

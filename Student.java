@@ -1,3 +1,9 @@
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class Student {
     private String firstname;
     private String lastname;
@@ -109,5 +115,72 @@ public class Student {
     @Override
     public String toString() {
         return firstname + " " +  lastname + " (" + matricule + ")";
+    }
+
+    /**
+     * Méthode principale pour exécuter les tests unitaires de la classe Student.
+     *
+     * @param args Les arguments de la ligne de commande (non utilisés).
+     */
+    public static void main(String[] args) {
+        // Exécute les tests unitaires
+        testStudentConstructor();
+        testSettersAndGetters();
+        testAddCourse();
+        testToString();
+
+        System.out.println("Tous les tests de Student ont réussi.");
+    }
+
+    /**
+     * Teste le constructeur de la classe Student.
+     */
+    public static void testStudentConstructor() {
+        Student student = new Student("John", "Doe", "12345");
+        assert student.getFirstname().equals("John") : "Prénom incorrect";
+        assert student.getLastname().equals("Doe") : "Nom de famille incorrect";
+        assert student.getMatricule().equals("12345") : "Matricule incorrect";
+        System.out.println("testStudentConstructor réussi.");
+    }
+
+    /**
+     * Teste les méthodes setters et getters de la classe Student.
+     */
+    public static void testSettersAndGetters() {
+        Student student = new Student();
+        student.setFirstname("Jane");
+        student.setLastname("Smith");
+        student.setMatricule("54321");
+
+        assert student.getFirstname().equals("Jane") : "Méthode setter/getter du prénom incorrecte";
+        assert student.getLastname().equals("Smith") : "Méthode setter/getter du nom de famille incorrecte";
+        assert student.getMatricule().equals("54321") : "Méthode setter/getter du matricule incorrecte";
+        System.out.println("testSettersAndGetters réussi.");
+    }
+
+    /**
+     * Teste l'ajout d'un cours à l'horaire de la classe Student.
+     */
+    public static void testAddCourse() {
+        Student student = new Student("John", "Doe", "12345");
+        Course course = new Course("IFT", 1015, 3);
+        course.addSemester(new Semester("A24", LocalDate.now(), LocalDate.now(), new ArrayList<Period>(
+            Arrays.asList(new Period(LocalTime.of(15,30), LocalTime.of(16,30), DayOfWeek.FRIDAY, ClassType.TH, "A"))), new ArrayList<Exam>()
+        ));
+        student.addCourse(course, "A24");
+
+        Schedule schedule = student.getSchedule();
+        student.getSchedule().printScheduleGrid();
+        assert schedule.getCourses().contains(course) : "Le cours n'a pas été ajouté correctement";
+        System.out.println("testAddCourse réussi.");
+    }
+
+    /**
+     * Teste la méthode toString de la classe Student.
+     */
+    public static void testToString() {
+        Student student = new Student("John", "Doe", "12345");
+        assert student.toString().equals("John Doe (12345)") : "Méthode toString incorrecte";
+        System.out.println("testToString réussi.");
     }
 }

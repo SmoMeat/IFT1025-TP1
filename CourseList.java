@@ -1,4 +1,8 @@
-import java.time.DayOfWeek;
+/**
+ * Cette classe est désormais inutile! ne pas prendre en compte!!!
+ */
+
+/*import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -99,4 +103,4 @@ public class CourseList {
     // ift1025, 1065, 1215
     // ift2105
     // mat1400
-}
+}*/

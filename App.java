@@ -910,49 +910,53 @@ public class App {
 
     /**
      * Cette méthode gère l'ajout de cours à un horaire d'étudiant en vérifiant si l'ajout crée
-     * un conflit d'horaire
+     * un conflit d'horaire ou s'il y a déjà le maximum de 10 cours par horaire
      */
     public static void askAddSchedule() {
         Student etudiantActif = validateStudent();
         Course coursActif = null;
+        
+        // Vérification que l'horaire à moins de 10 cours pour faire le traitement
+        if (etudiantActif.getSchedule().getCourses().size() < 10) {
+            try {
+                // Si l'étudiant est "null", ça plante
+                Schedule schedule = etudiantActif.getSchedule();
 
-        try {
-            // Si l'étudiant est "null", ça plante
-            Schedule schedule = etudiantActif.getSchedule();
+                System.out.println("Entrez le code du cours à ajouter (ex: IFT1015):");
+                String SCours = scanner.nextLine();
+                
+                for (Course course : courses) {
+                    if (course.getAbbreviatedName().equalsIgnoreCase(SCours))
+                        coursActif = course;
 
+                }
+                System.out.println("Entrez le nom de la session (ex: A24)");
+                String sessionName = scanner.nextLine();
 
-            System.out.println("Entrez le code du cours à ajouter (ex: IFT1015):");
-            String SCours = scanner.nextLine();
-            
-            for (Course course : courses) {
-                if (course.getAbbreviatedName().equalsIgnoreCase(SCours))
-                    coursActif = course;
+                // Si le cours est "null" ou que la session n'est pas bonne, ça plante
+                schedule.addCourse(coursActif, sessionName);
 
-            }
-            System.out.println("Entrez le nom de la session (ex: A24)");
-            String sessionName = scanner.nextLine();
+                // S'il y a un conflit d'horaire, on demande à l'usagé ce qu'il veut faire
+                if (etudiantActif.getSchedule().hasConflict()) {
+                    System.out.println("Il y a un conflit d'horaire! Voulez vous toujours ajouter le cours?\n " +
+                            "Entrez: (oui) Pour l'ajouter quand même"
+                            + "\n\t (N'importe quoi) pour ne pas l'ajouter");
+                    String answer = scanner.nextLine();
 
-            // Si le cours est "null" ou que la session n'est pas bonne, ça plante
-            schedule.addCourse(coursActif, sessionName);
-
-            // S'il y a un conflit d'horaire, on demande à l'usagé ce qu'il veut faire
-            if (etudiantActif.getSchedule().hasConflict()) {
-                System.out.println("Il y a un conflit d'horaire! Voulez vous toujours ajouter le cours?\n " +
-                        "Entrez: (oui) Pour l'ajouter quand même"
-                        + "\n\t (N'importe quoi) pour ne pas l'ajouter");
-                String answer = scanner.nextLine();
-
-                if (!answer.equalsIgnoreCase("oui")) {
-                    schedule.removeCourse(coursActif, sessionName);
-                    System.out.println("Le cours n'a pas été ajouté");
+                    if (!answer.equalsIgnoreCase("oui")) {
+                        schedule.removeCourse(coursActif, sessionName);
+                        System.out.println("Le cours n'a pas été ajouté");
+                    } else {
+                        System.out.println("Le cours a été ajouté avec succès");
+                    }
                 } else {
                     System.out.println("Le cours a été ajouté avec succès");
                 }
-            } else {
-                System.out.println("Le cours a été ajouté avec succès");
-            }
-        } catch (Exception e) {
+            } catch (Exception e) {
             System.out.println("Les informations sont érronées! Aucun cours n'a été ajouté");
+            }
+        } else {
+            System.out.println("L'horaire est déjà composé de 10 cours, soit le maximum!");
         }
     }
 
@@ -1033,7 +1037,6 @@ public class App {
                 "\n\t (Le nom) Pour entrer les nom 1 par 1" +
                 "\n\t (End) pour finir");
         String SCours;
-        List<Schedule> result;
 
         while (!(SCours = scanner.nextLine()).equalsIgnoreCase("End")) {
             boolean vu = false;

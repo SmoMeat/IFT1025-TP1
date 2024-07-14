@@ -117,7 +117,7 @@ public class DbManager {
     private void saveCourse(Course course) {
         try {
             String sqlQuery = String.format("INSERT INTO courses (subject, value, course_name, description, credit) VALUES ('%s', %d, '%s', '%s', %d)",
-                                            course.getSubject(), course.getValue(), course.getAbbreviatedName(), course.getDescription(), course.getCredit());
+                                            course.getSubject(), course.getValue(), course.getName(), course.getDescription(), course.getCredit());
             statement.executeUpdate(sqlQuery);
             saveSemesters(course.getSemesters(), statement.executeQuery("SELECT last_insert_rowid()").getInt(1));
         } catch (Exception e) {

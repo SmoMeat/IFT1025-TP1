@@ -1,4 +1,5 @@
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,8 +95,6 @@ public class Schedule {
         for (DayOfWeek day : DayOfWeek.values()) {
             ArrayList<SchedulePeriod> toRemove = new ArrayList<>();
             for (SchedulePeriod schedulePeriod : schedule.get(day)) {
-                System.out.println(schedulePeriod.getCourse());
-                System.out.println(System.identityHashCode(schedulePeriod.getCourse()));
                 if (schedulePeriod.getCourse().equals(course))
                     toRemove.add(schedulePeriod);
             }
@@ -531,5 +530,51 @@ public class Schedule {
         }
 
         return totalCredits;
+    }
+    
+    /**
+     * Méthode principale pour exécuter les tests unitaires.
+     *
+     * @param args Les arguments de la ligne de commande (non utilisés).
+     */
+    public static void main(String[] args) {
+        runTests();
+    }
+
+    /**
+     * Méthode pour exécuter les tests unitaires de la classe Schedule.
+     */
+    public static void runTests() {
+        // Test du constructeur par défaut
+        Schedule schedule1 = new Schedule();
+        assert schedule1.getSemesterName().equals("A24") : "Le nom du semestre par défaut devrait être 'A24'";
+        
+        // Test du constructeur avec nom de semestre
+        Schedule schedule2 = new Schedule("H25");
+        assert schedule2.getSemesterName().equals("H25") : "Le nom du semestre devrait être 'B24'";
+
+        // Test de l'ajout d'un cours
+        Course course1 = new Course("IFT", 1015, 3);
+        Period period1 = new Period(LocalTime.of(10, 30), LocalTime.of(12, 30), DayOfWeek.TUESDAY, ClassType.TH, "A");
+        course1.addSemester(new Semester("A24", LocalDate.of(2024,9,1), LocalDate.of(2024,12,20), new ArrayList<>(Arrays.asList(period1)), new ArrayList<>()));
+        schedule1.addCourse(course1, "A24");
+        assert schedule1.getClassesForSpecificDay(DayOfWeek.TUESDAY).size() == 1 : "Le cours devrait être ajouté au mardi";
+        
+        // Test de la copie de l'emploi du temps
+        Schedule schedule3 = new Schedule(schedule1);
+        assert schedule3.getClassesForSpecificDay(DayOfWeek.TUESDAY).size() == 1 : "Le cours devrait être copié au mardi dans le nouvel emploi du temps";
+
+        // Test de la suppression d'un cours
+        schedule1.removeCourse(course1, "A24");
+        assert schedule1.getClassesForSpecificDay(DayOfWeek.TUESDAY).isEmpty() : "Le cours devrait être retiré du mardi";
+
+        // Test de la vérification de conflit
+        SchedulePeriod sp1 = new SchedulePeriod(course1, period1);
+        schedule2.addSchedulePeriod(sp1);
+        SchedulePeriod sp2 = new SchedulePeriod(course1, new Period(LocalTime.of(11, 30), LocalTime.of(13, 30), DayOfWeek.TUESDAY, ClassType.TH, "A"));
+        schedule2.addSchedulePeriod(sp2);
+        assert schedule2.hasConflictOnSpecificDay(DayOfWeek.TUESDAY) : "Il devrait y avoir un conflit le mardi";
+
+        System.out.println("Tous les tests unitaires de Schedule ont été exécutés avec succès.");
     }
 }

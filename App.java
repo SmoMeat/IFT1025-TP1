@@ -1,3 +1,8 @@
+/**
+ * >>> del *.class; javac .\App.java -d .\bin\; java -classpath "bin;lib/*" App
+ */
+
+
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -305,7 +310,7 @@ public class App {
      * @return l'index du cours, ou -1 si l'utilisateur tape 'stop'.
      */
     public static int askFindCourse() {
-        String userInput = scanner.nextLine();
+        userInput = scanner.nextLine();
         int index = getIndexOfCourse(userInput);
 
         while (index == -1) {

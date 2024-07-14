@@ -123,7 +123,13 @@ public class Student {
      * @param args Les arguments de la ligne de commande (non utilisés).
      */
     public static void main(String[] args) {
-        // Exécute les tests unitaires
+        runTests();
+    }
+
+    /**
+     * Méthode principale pour exécuter les tests unitaires de la classe Student.
+     */
+    public static void runTests() {
         testStudentConstructor();
         testSettersAndGetters();
         testAddCourse();
@@ -170,7 +176,6 @@ public class Student {
         student.addCourse(course, "A24");
 
         Schedule schedule = student.getSchedule();
-        student.getSchedule().printScheduleGrid();
         assert schedule.getCourses().contains(course) : "Le cours n'a pas été ajouté correctement";
         System.out.println("testAddCourse réussi.");
     }

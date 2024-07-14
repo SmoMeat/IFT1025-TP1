@@ -41,17 +41,33 @@ public class Course {
         this.prerequisites = prerequisites;
     }
 
+    /**
+     * Cette fonction gère l'affichage du cours lors d'un print
+     * 
+     * @return String - Retourne le format d'affichage voulu
+     */
     @Override
     public String toString() {
         return getAbbreviatedName() + ": " + name + " (" + description + ") " + credit + " crédit avec " + semesters.size() + " semestres enregistrées";
     }
 
+    /**
+     * Cette fonction permet d'ajouter des cours préalables
+     * 
+     * @param prerequisite Course - Cours préalable à ajouter
+     * @throws IllegalArgumentException
+     */
     public void addPrerequisite(Course prerequisite) throws IllegalArgumentException {
         if (prerequisites.contains(prerequisite))
             throw new IllegalArgumentException(getAbbreviatedName() + " a déjà " + prerequisite.getAbbreviatedName() + " comme préalable.");
         prerequisites.add(prerequisite);
     }
 
+    /**
+     * Cette fonction permet d'obtenir le nom du cours sous la forme "IFT1015" par exemple
+     * 
+     * @return String - Le format du nom du cours 
+     */
     public String getAbbreviatedName() {
         return this.subject + this.value;
     }
@@ -102,6 +118,17 @@ public class Course {
         return this.semesters;
     }
 
+    public ArrayList<Course> getPrerequisites() {
+        return this.prerequisites;
+    }
+
+    /**
+     * Cette fonction permet d'obtenir le semestre souhaité par son nom
+     * 
+     * @param name String - nom du semestre
+     * 
+     * @return Semester - Le semestre souhaité
+     */
     public Semester getSemesterByName(String name) {
         for (Semester semester : semesters) {
             if (semester.getName().equals(name))
@@ -110,6 +137,11 @@ public class Course {
         return null;
     }
 
+    /**
+     * Cette fonction permet d'obetnir tous les semestres associés au cours
+     * 
+     * @return String - L'énumération des semestres du cours
+     */
     public String getSemestersAsString() {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -123,27 +155,41 @@ public class Course {
         return stringBuilder.toString();
     }
 
+    /**
+     * Cette fonction permet d'ajouter un semestre à la liste des semestres du cours
+     * 
+     * @param semester Semestre - C'est le semestre à ajouter
+     */
     public void addSemester(Semester semester) {
         this.semesters.add(semester);
     }
 
+    /**
+     * Cette fonction permet de retirer un semestre à la liste des semestres du cours
+     * 
+     * @param semester Semestre - C'est le semestre à retirer
+     */
     public void removeSemester(Semester semester) {
         this.semesters.remove(semester);
     }
 
+    /**
+     * Cette fonction permet d'ajouter plusieurs semestre à la fois à la liste des 
+     * semestres du cours
+     * 
+     * @param semester ArrayList<Semestre> - C'est la liste de semestres à ajouter
+     */
     public void addSemesters(ArrayList<Semester> semesters) {
         this.semesters.addAll(semesters);
     }
 
-    // pas utilisé !!!
-    // public void removeSemesters(ArrayList<Semester> semesters) {
-    //     this.semesters.removeAll(semesters);
-    // }
-
-    public ArrayList<Course> getPrerequisites() {
-        return this.prerequisites;
-    }
-
+    /**
+     * Cette fonction vérifie si deux cours sont égaux
+     * 
+     * @param other Object - Object avec lequel on vérifie si le cours est le même
+     * 
+     * @return boolean - C'est la valeur indiquant si les cours sont les mêmes ou non
+     */
     @Override
     public boolean equals(Object other) {
         Course otherCourse = (Course) other;

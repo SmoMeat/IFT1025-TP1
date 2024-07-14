@@ -506,6 +506,11 @@ public class App {
             System.out.println("Aucun cours " + userInput + " n'a été trouvé, essayez à nouveau ");
     }
 
+    /**
+     * C'est le menu de la gestion des cours
+     * 
+     * @return String - Le format du menu
+     */
     public static String getGestionCoursMessage() {
         return "Entrez: (1) pour voir tous les cours enregistrés"
                 + "\n\t(2) pour regarder les caractéristiques d'un cours"
@@ -515,6 +520,11 @@ public class App {
                 + "\n\t(back) pour revenir au menu principal";
     }
 
+    /**
+     * C'est le menu de la gestion des étudiants
+     * 
+     * @return String - Le format du menu
+     */
     public static String getGestionEtudiantMessage() {
         return "Entrez: (1) pour afficher tous les étudiants"
                 + "\n\t(2) pour ajouter un étudiant"
@@ -527,6 +537,11 @@ public class App {
                 + "\n\t(back) pour revenir au menu principal";
     }
 
+    /**
+     * C'est le menu de la gestion des modification sur un étudiant
+     * 
+     * @return String - Le format du menu
+     */
     public static String getModifyStudentMessage(Student student) {
         return "Vous voulez modifier l'étudiant: " + student
                 + "\nEntrez: (1) pour modifer son prénom"
@@ -535,6 +550,11 @@ public class App {
                 + "\n\t(back) pour revenir au gestionnaire d'étudiant";
     }
 
+    /**
+     * C'est le menu de la gestion de la génération des horaires
+     * 
+     * @return String - Le format du menu
+     */
     public static String getScheduleType() {
         return "Entrez: (1) pour obtenir toutes les horaires possibles"
                 + "\n\t(2) pour obtenir toutes les horaires sans conflit"
@@ -542,9 +562,15 @@ public class App {
                 + "\n\t(back) pour revenir au gestionnaire d'étudiant";
     }
 
+    /**
+     * C'est la fonction qui gère les entrées de l'utilisateur face au menu de la gestion des étudiants
+     */
     public static void askGestionEtudiants() {
+        // On affiche le menu
         System.out.println(getGestionEtudiantMessage());
+        // Tant que l'utilisateur n'entre pas "back"
         while (!(userInput = scanner.nextLine()).equalsIgnoreCase("back")) {
+            // On vérifie l'entrée
             switch (userInput) {
                 case "1":
                     for (Student student : students)
@@ -580,10 +606,14 @@ public class App {
                     break;
 
             }
+            // On réaffiche le menu de gestion des étudiants
             System.out.println(getGestionEtudiantMessage());
         }
     }
 
+    /**
+     * Cette méthode gère l'ajout d'un étudiant
+     */
     public static void askAddStudent() {
         System.out.println("Quel est le prénom de l'étudiant");
         String firstname = scanner.nextLine();
@@ -597,8 +627,17 @@ public class App {
         Student nouvelEtudiant = new Student(firstname, lastname, matricule);
         students.add(nouvelEtudiant);
     }
-
+    
+    /**
+     * Cette fonction est un algorithme qui demande le matricule d'un étudiant et vérifie s'il correspond
+     * au matricule d'une des étudiants de l'attribut "students". Si c'est le cas, on retourne l'étudiant.
+     * Sinon, on offre la possibilité à l'utilisateur de soit réessayer en tappant "oui" ou bien abandonné
+     * en tappant n'importe quoi d'autre. Si aucun étudiant n'est finalement choisi, on retourne null.
+     * 
+     * @return Student - Retourne l'étudiant choisi ou null si aucun n'est finalement choisi
+     */
     public static Student validateStudent() {
+        // Initialisation des variables
         boolean vu = false;
         Student etudiantActif = null;
         boolean safe = false;
@@ -609,13 +648,15 @@ public class App {
             
             System.out.println("Quel est le matricule de l'étudiant?");
             String matricule = scanner.nextLine();
-
+            
+            // On cherche l'étudiant avec le matricule
             for (Student student : students) {
                 if (student.getMatricule().equals(matricule)) {
                     etudiantActif = student;
                     vu = true;
                 }
             }
+            // Si on ne le trouve pas, on demande de réessayer ou de quitter
             if (!vu) {
                 System.out.println("Matricule non-trouvé. \nEntrez:\t(oui) Pour Réessayer \n\t(N'importe quoi) Pour sortir");
                 String retry = scanner.nextLine();
@@ -627,43 +668,59 @@ public class App {
         return etudiantActif;
     }
 
+    /**
+     * Cette méthode gère la modification d'un étudiant grâce à un menu qui propose à l'utilisateur ce qu'il
+     * veut choisir de modifier (Prénom, nom ou matricule). Il a aussi l'option de revenir en arrière.
+     */
     public static void askModifyStudent() {
+         // On demande à l'utilisateur de choisir l'étudiant à modifier
         Student etudiantActif = validateStudent();
-
+        
+        // Si l'étudiant existe...
         if (etudiantActif != null) {
+            // On affiche le menu de modification d'un étudiant
             System.out.println(getModifyStudentMessage(etudiantActif));
+            // Tant qu'on n'entre pas back
             while (!(userInput = scanner.nextLine()).equalsIgnoreCase("back")) {
                 switch (userInput) {
+                    // On modifie le prénom
                     case "1":
                         System.out.println("Quel est son nouveau prénom?");
                         String firstname = scanner.nextLine();
                         etudiantActif.setFirstname(firstname);
                         break;
 
+                    // On modifie le nom de famille
                     case "2":
                         System.out.println("Quel est son nouveau nom de famille?");
                         String lastname = scanner.nextLine();
                         etudiantActif.setLastname(lastname);
                         break;
 
+                    // On modifie le matricule
                     case "3":
                         System.out.println("Quel est son nouveau matricule?");
                         String matricule = scanner.nextLine();
                         etudiantActif.setMatricule(matricule);
                         break;
                 }
+                // On demande la prochaine modification
                 System.out.println("Quoi d'autre?");
                 System.out.println(getModifyStudentMessage(etudiantActif));
             }
         }
     }
 
+    /**
+     * Cette méthode gère la suppression d'un étudiant.
+     */
     public static void askDeleteStudent() {
         boolean vu = false;
         int index = -1;
         System.out.println("Quel est le matricule de l'étudiant à supprimer?");
         String matricule = scanner.nextLine();
 
+        // On  parcours les étudiants et on trouve l'index
         for (Student student : students) {
             index++;
             if (student.getMatricule().equals(matricule)) {
@@ -671,6 +728,7 @@ public class App {
                 break;
             }
         }
+        // On retire l'étudiant ou présente une erreur
         if (!vu) {
             System.out.println("Matricule non-trouvée. Aucun étudiant n'a été supprimé!");
         } else {
@@ -679,6 +737,9 @@ public class App {
         }
     }
 
+    /**
+     * Cette méthode gère l'affichage de l'horaire d'un étudiant
+     */
     public static void askSeeSchedule() {
         boolean vu = false;
         System.out.println("Quel est le matricule de l'étudiant dont vous voulez voir l'horaire?");
@@ -695,17 +756,22 @@ public class App {
 
     }
 
+    /**
+     * Cette méthode gère l'ajout de cours à un horaire d'étudiant en vérifiant si l'ajout crée
+     * un conflit d'horaire
+     */
     public static void askAddSchedule() {
         Student etudiantActif = validateStudent();
         Course coursActif = null;
 
         try {
+            // Si l'étudiant est "null", ça plante
             Schedule schedule = etudiantActif.getSchedule();
 
 
             System.out.println("Entrez le code du cours à ajouter (ex: IFT1015):");
             String SCours = scanner.nextLine();
-            // À FAIRE: Gérer mieux les erreurs
+            
             for (Course course : courses) {
                 if (course.getAbbreviatedName().equalsIgnoreCase(SCours))
                     coursActif = course;
@@ -714,8 +780,10 @@ public class App {
             System.out.println("Entrez le nom de la session (ex: A24)");
             String sessionName = scanner.nextLine();
 
+            // Si le cours est "null" ou que la session n'est pas bonne, ça plante
             schedule.addCourse(coursActif, sessionName);
 
+            // S'il y a un conflit d'horaire, on demande à l'usagé ce qu'il veut faire
             if (etudiantActif.getSchedule().hasConflict()) {
                 System.out.println("Il y a un conflit d'horaire! Voulez vous toujours ajouter le cours?\n " +
                         "Entrez: (oui) Pour l'ajouter quand même"
@@ -736,13 +804,16 @@ public class App {
         }
     }
 
+    /**
+     * Cette méthode gère la suppression de cours à un horaire d'étudiant
+     */
     public static void askDeleteSchedule() {
         Student etudiantActif = validateStudent();
         Course coursActif = null;
 
         try {
+            // Si l'étudiant est "null", ça plante
             Schedule schedule = etudiantActif.getSchedule();
-
 
             System.out.println("Entrez le code du cours à supprimer (ex: IFT1015):");
             String SCours = scanner.nextLine();
@@ -752,16 +823,30 @@ public class App {
                     coursActif = course;
 
             }
+
             System.out.println("Entrez le nom de la session (ex: A24)");
             String sessionName = scanner.nextLine();
 
-            schedule.removeCourse(coursActif, sessionName);
-            System.out.println("Le cours a été supprimé avec succès");
+            // Si le cours est "null" ou la session erronée, ça plante
+            if (schedule.getCourses().contains(coursActif)) {
+                
+                schedule.removeCourse(coursActif, sessionName);
+                System.out.println("Le cours a été supprimé avec succès");
+            } else {
+                System.out.println("Le cours n'est pas à l'horaire!");
+            }
+
         } catch (Exception e) {
             System.out.println("Les informations sont érronées! Aucun cours n'a été supprimé");
         }
     }
 
+    /**
+     * Cette méthode gère la génération automatique d'horaire d'étudiant. On peut choisir de générer
+     * tous les horaires possibles pour en choisir 1 parmi la liste, tous les horaires sans conflits
+     * possible pour en choisir un parmi la liste ou bien le meilleur horaire selon des critères 
+     * préétablis qui sera ajouter automatique à l'étudiant.
+     */
     public static void askGenerateSchedule() {
         Student etudiantActif = validateStudent();
 
@@ -783,32 +868,54 @@ public class App {
         }
     }
 
+    /**
+     * Cette fonction demande à l'utilisateur d'entrer les cours candidats pour la génération de l'horaire.
+     * Si on entre (all), on ajoute tous les cours disponibles. Sinon, on peut les entrer 1 à 1 ou bien quitter
+     * 
+     * @return ArrayList<Course> - Retourne une liste des cours candidats
+     */
     public static ArrayList<Course> choiceCoursCandidats() {
         ArrayList<Course> coursCandidats = new ArrayList<>();
+        // On présente le menu des choix possibles
         System.out.println("Quels sont les cours candidats?\n Entrer: (All) Pour tous les cours disponibles " +
                 "\n\t (Le nom) Pour entrer les nom 1 par 1" +
-                "\n\t (stop) pour finir");
+                "\n\t (End) pour finir");
         String SCours;
         List<Schedule> result;
 
-        while (!(SCours = scanner.nextLine()).equalsIgnoreCase("stop")) {
+        while (!(SCours = scanner.nextLine()).equalsIgnoreCase("End")) {
+            boolean vu = false;
 
             if (SCours.equalsIgnoreCase("All"))
                 return courses;
 
+            // On va chercher le cours
             for (Course course : courses) {
                 if (course.getAbbreviatedName().equalsIgnoreCase(SCours)) {
                     coursCandidats.add(course);
-
+                    vu = true;
                     break;
                 }
             }
-            System.out.println("Quels sont les autres cours candidats? Entrer le nom; (stop) pour finir et (ALL) pour tous les cours");
+
+            if (!vu) {
+                System.out.println("Le cours n'existe pas!");
+            }
+            // On redemande les prochains cours à ajouter
+            System.out.println("Quels sont les autres cours candidats? Entrer le nom" +
+             "\n\t (End) pour finir" + "\n\t (ALL) pour tous les cours");
         }
         return coursCandidats;
     }
 
+    /**
+     * Cette fonction gère le demande de tous les horaires possibles en fonction de la 
+     * session de demandée et des cours candidats
+     * 
+     * @param student Student - Il s'agit de l'étudiant pour lequel on génère les horaires
+     */
     public static void askAllSchedule(Student student) {
+        // On demande les cours candidats
         ArrayList<Course> coursCandidats = choiceCoursCandidats();
         List<Schedule> result;
 
@@ -817,18 +924,38 @@ public class App {
 
         result = Schedule.generateAllPossibleSchedules(coursCandidats, sessionName);
 
+        // On numérote les horaires générées
         for (int i=0; i<result.size(); i++) {
             System.out.println("Horaire " + (i+1) + ": ");
             result.get(i).printScheduleGrid();
         }
 
-        System.out.println("Laquelle voulez-vous? (Entrer le numéro)");
-        int choice = askInt();
+        boolean choiceB = false;
+        while (!choiceB) {
+            try {
+                System.out.println("Laquelle voulez-vous? (Entrer le numéro)");
+                int choice = askInt();
 
-        student.setSchedule(result.get(choice - 1));
+                // On ajuste l'horaire selon le choix
+                student.setSchedule(result.get(choice - 1));
+                choiceB = true;
+            } catch(IndexOutOfBoundsException e) {
+                System.out.println("Le numéro est invalide!");
+            }
+        }
     }
 
+    /**
+     * Cette fonction gère le demande de tous les horaires possibles sans conflit en fonction de la 
+     * session de demandée et des cours candidats. 
+     * 
+     * @param student Student - Il s'agit de l'étudiant pour lequel on génère les horaires
+     */
     public static void askSuitableSchedule(Student student) {
+        /* La fonction est la même que la précédente à l'exception de l'utilisation de la
+         * fonction "genarateSuitableSchedules" au lieu de "genarateAllPossibleSchedules"
+         * et du fait qu'on demande un nombre de crédit maximal et minimal pour les horaires
+         */
         ArrayList<Course> coursCandidats = choiceCoursCandidats();
         List<Schedule> result;
 
@@ -843,16 +970,32 @@ public class App {
 
         result = Schedule.genarateSuitableSchedules(coursCandidats, creditMin, creditMax, sessionName);
 
-        for (Schedule schedule : result) {
-            schedule.printScheduleGrid();
+        for (int i=0; i<result.size(); i++) {
+            System.out.println("Horaire " + (i+1) + ": ");
+            result.get(i).printScheduleGrid();
         }
 
-        System.out.println("Laquelle voulez-vous? (Entrer le numéro)");
-        int choice = askInt();
+        boolean choiceB = false;
+        while (!choiceB) {
+            try {
+                System.out.println("Laquelle voulez-vous? (Entrer le numéro)");
+                int choice = askInt();
 
-        student.setSchedule(result.get(choice + 1));
+                // On ajuste l'horaire selon le choix
+                student.setSchedule(result.get(choice - 1));
+                choiceB = true;
+            } catch(IndexOutOfBoundsException e) {
+                System.out.println("Le numéro est invalide!");
+            }
+        }
     }
 
+    /**
+     * Cette fonction gère le demande de la meilleure horaire possible en fonction de la 
+     * session de demandée et des cours candidats. 
+     * 
+     * @param student Student - Il s'agit de l'étudiant pour lequel on génère les horaires
+     */
     public static void askBestSchedule(Student student) {
         ArrayList<Course> coursCandidats = choiceCoursCandidats();
         Schedule result;
@@ -872,7 +1015,13 @@ public class App {
 
         student.setSchedule(result);
     }
-
+    
+    /**
+     * Cette fonction demande à l'utilisateur d'entrer un nombre entié et permet
+     * de retirer certain bug que l'on a avec la fonction "scanner.nextInt"
+     * 
+     * @return int - L'entier choisi
+     */
     public static int askInt() {
         try {
             return Integer.parseInt(scanner.nextLine());

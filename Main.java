@@ -5,13 +5,11 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        //Cours PremierCours = new Cours("IFT",1025, 3);
-        //System.out.println(new Date(2024 - 1900, 11, 5));
-        //System.out.println(LocalTime.of(13,30));
-        //System.out.println(ClassType.TP + "");
-        //PremierCours.addDate();
-        //PremierCours.addSchedule();
-        //PremierCours.addExams();
+        Course PremierCours = new Course("IFT",1025, 3);
+        System.out.println(new Date(2024 - 1900, 11, 5));
+        System.out.println(LocalTime.of(13,30));
+        System.out.println(ClassType.TP + "");
+        
         //System.out.println(PremierCours);
 
         //Date date = new Date(124,8,9);
@@ -31,14 +29,14 @@ public class Main {
         //System.out.println(a1.timeBetween(b1));
 
         //System.out.println(a1.inConflict(b1));
-        CourseList courseList = new CourseList();
+        //CourseList courseList = new CourseList();
 
-        List<Schedule> schedules = Schedule.genarateSuitableSchedules(courseList.mathInfoCourses, 13, 18, "A24");
+        //List<Schedule> schedules = Schedule.genarateSuitableSchedules(courseList.mathInfoCourses, 13, 18, "A24");
 
-        Schedule schedule = schedules.get(0);
+        //Schedule schedule = schedules.get(0);
 
-        schedule.printScheduleGrid();
+        //schedule.printScheduleGrid();
 
-        System.out.println(schedule.orderPeriodsForSpecificDay(DayOfWeek.FRIDAY));
+       // System.out.println(schedule.orderPeriodsForSpecificDay(DayOfWeek.FRIDAY));
     }
 }

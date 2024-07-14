@@ -219,7 +219,12 @@ public class Schedule {
      */
     public ArrayList<Exam> getExams() {
         ArrayList<Exam> exams = new ArrayList<>();
-        getCourses().forEach(course -> exams.addAll(course.getSemesterByName(semesterName).getExams()));
+
+        for (Course course : this.getCourses()) {
+            if (course.getSemesterByName(semesterName) != null) {
+                exams.addAll(course.getSemesterByName(semesterName).getExams());
+            }
+        }
         return exams;
     }
 
@@ -496,8 +501,9 @@ public class Schedule {
                 System.out.println();
             }
 
-            System.out.println("╠═══════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╣");
-
+            System.out.println("╠═══════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╣"); 
+            }
+            
             for (Exam exam : getExams()) {
                 String examString = exam.toString();
 
@@ -511,7 +517,6 @@ public class Schedule {
 
             System.out.println("╚═════════════════════════════════════════════════════════════════════════════╝");
         }
-    }
 
     /**
      * Calcule le nombre total de crédits de l'horaire.

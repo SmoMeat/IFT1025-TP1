@@ -1,0 +1,21 @@
+## Utilisation
+
+Powershell
+```del *.class; javac .\App.java -d bin; java -classpath "bin;lib/*" App```
+
+Cmd
+```del *.class && javac App.java -d bin & java -classpath "bin;lib/*" App```
+
+Unix/mac
+```del *.class; javac App.java -d bin; java -classpath "bin:lib/*" App```
+
+# Pour exécuter les tests unitaires
+
+Powershell
+`del *.class; javac Test.java -d bin; java -ea -classpath "bin;lib/*" Test`
+
+Cmd
+`del *.class && javac Test.java -d bin & java -ea -classpath "bin;lib/*" Test`
+
+Unix/mac
+`del *.class; javac Test.java -d bin; java -ea -classpath "bin:lib/*" Test`

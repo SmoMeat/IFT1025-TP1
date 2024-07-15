@@ -238,6 +238,13 @@ public class Semester {
      * @param args Les arguments de la ligne de commande (non utilisés).
      */
     public static void main(String[] args) {
+        runTests();
+    }
+
+    /**
+     * Méthode principale pour exécuter les tests unitaires.
+     */
+    public static void runTests() {
         testSemesterConstructorWithPeriodsAndExams();
         testSemesterConstructorWithoutPeriodsAndExams();
         testAddPeriod();

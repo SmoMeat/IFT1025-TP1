@@ -43,6 +43,13 @@ public class SchedulePeriod extends Period {
      * @param args Les arguments de la ligne de commande (non utilisés).
      */
     public static void main(String[] args) {
+        runTests();
+    }
+
+    /**
+     * Méthode principale pour exécuter les tests unitaires.
+     */
+    public static void runTests() {
         testSchedulePeriodConstructor();
         testGetCourse();
         testSetCourse();
